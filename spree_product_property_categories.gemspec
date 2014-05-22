@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'selenium-webdriver'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'simplecov-rcov'
+  s.add_development_dependency 'shoulda-matchers'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'spree_auth_devise', '~> 2.2.0'
   s.add_development_dependency 'pry-rails'
