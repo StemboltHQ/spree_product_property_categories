@@ -1,13 +1,16 @@
-# Run Coverage report
-require 'simplecov'
-SimpleCov.start do
-  add_filter 'spec/dummy'
-  add_group 'Controllers', 'app/controllers'
-  add_group 'Helpers', 'app/helpers'
-  add_group 'Mailers', 'app/mailers'
-  add_group 'Models', 'app/models'
-  add_group 'Views', 'app/views'
-  add_group 'Libraries', 'lib'
+if ENV['COVERAGE']
+  require 'simplecov'
+  require 'simplecov-rcov'
+
+  class SimpleCov::Formatter::MergedFormatter
+    def format(result)
+      SimpleCov::Formatter::HTMLFormatter.new.format(result)
+      SimpleCov::Formatter::RcovFormatter.new.format(result)
+    end
+  end
+
+  SimpleCov.formatter = SimpleCov::Formatter::MergedFormatter
+  SimpleCov.start 'rails'
 end
 
 # Configure Rails Environment
