@@ -1,0 +1,5 @@
+require 'spree_core'
+require 'spree_api'
+require 'spree_backend'
+require 'spree_frontend'
+require 'spree_product_property_categories/engine'
