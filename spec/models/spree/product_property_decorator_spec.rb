@@ -4,6 +4,22 @@ describe Spree::ProductProperty do
   it { should belong_to(:category) }
   let!(:instance) { described_class.new }
 
+  describe ".for_category" do
+    let!(:property) { create :product_property, category_id: 100 }
+    let!(:other_property) { create :product_property, category_id: 88 }
+    let(:category_double) { double("Spree::PropertyCategory", id: 100) }
+
+    subject { described_class.for_category(category_double) }
+
+    it "contains the properties that have the supplied category" do
+      expect(subject).to include(property)
+    end
+
+    it "doesnt contain properties that dont have the category" do
+      expect(subject).to_not include(other_property)
+    end
+  end
+
   describe "#category_name=" do
     subject { instance.category_name = cat_name }
 

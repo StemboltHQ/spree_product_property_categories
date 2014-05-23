@@ -1,17 +1,18 @@
-<tr class="product_property fields" id="spree_<%= dom_id(f.object) %>" data-hook="product_property">
+<tr class="product_property fields" id="spree_<%= dom_id(form.object) %>" data-hook="product_property">
   <td class="no-border">
     <span class="handle"></span>
-    <%= f.hidden_field :id %>
+    <%= form.hidden_field :id %>
+    <%= form.hidden_field :category_name, value: cat_name %>
   </td>
   <td class='property_name'>
-    <%= f.text_field :property_name, :class => 'autocomplete' %>
+    <%= form.text_field :property_name, :class => 'autocomplete' %>
   </td>
   <td class='value'>
-    <%= f.text_field :value %>
+    <%= form.text_field :value %>
   </td>
   <td class="actions">
-    <% if f.object.persisted? %>
-      <%= link_to_delete f.object, :no_text => true %>
+    <% if form.object.persisted? %>
+      <%= link_to_delete form.object, :no_text => true %>
     <% end %>
   </td>
 </tr>

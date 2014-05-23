@@ -22,20 +22,11 @@
     <div id="prototypes" data-hook></div>
     <%= image_tag 'select2-spinner.gif', :plugin => 'spree', :style => 'display:none;', :id => 'busy_indicator' %>
 
-    <table class="index sortable" data-hook data-sortable-link="<%= update_positions_admin_product_product_properties_url %>">
-      <thead>
-        <tr data-hook="product_properties_header">
-          <th colspan="2"><%= Spree.t(:property) %></th>
-          <th><%= Spree.t(:value) %></th>
-          <th class="actions"></th>
-        </tr>
-      </thead>
-      <tbody id="product_properties" data-hook>
-        <%= f.fields_for :product_properties do |pp_form| %>
-          <%= render 'product_property_fields', :f => pp_form %>
-        <% end %>
-      </tbody>
-    </table>
+    <% @categories.each do |category| %>
+      <%# TODO: Styling & Locales %>
+      <h3><%= category.name %> Category</h3>
+      <%= render "category_table", f: f, category: category %>
+    <% end %>
 
     <%= render 'spree/admin/shared/edit_resource_links' %>
 
