@@ -4,6 +4,7 @@ Spree::ProductProperty.class_eval do
   scope :for_category, ->(category) do
     where(category_id: category.id)
   end
+  scope :uncategorized, ->{ where(category_id: nil) }
 
   def category_name=(name)
     unless name.blank?

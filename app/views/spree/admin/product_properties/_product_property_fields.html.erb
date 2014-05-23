@@ -2,7 +2,7 @@
   <td class="no-border">
     <span class="handle"></span>
     <%= form.hidden_field :id %>
-    <%= form.hidden_field :category_name, value: cat_name %>
+    <%= form.hidden_field :category_name, value: category.try(:name) %>
   </td>
   <td class='property_name'>
     <%= form.text_field :property_name, :class => 'autocomplete' %>

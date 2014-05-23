@@ -7,8 +7,8 @@
     </tr>
   </thead>
   <tbody id="product_properties" data-hook>
-    <%= f.fields_for :product_properties, @product.product_properties.for_category(category) do |pp_form| %>
-      <%= render 'product_property_fields', form: pp_form, cat_name: category.name %>
+    <%= f.fields_for :product_properties, properties do |pp_form| %>
+      <%= render 'product_property_fields', form: pp_form, category: category %>
     <% end %>
   </tbody>
 </table>

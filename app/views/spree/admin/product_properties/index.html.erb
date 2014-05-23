@@ -22,10 +22,17 @@
     <div id="prototypes" data-hook></div>
     <%= image_tag 'select2-spinner.gif', :plugin => 'spree', :style => 'display:none;', :id => 'busy_indicator' %>
 
+    <% if @product.product_properties.uncategorized.any? %>
+      <h3>Uncategorized</h3>
+      <% properties = @product.product_properties.uncategorized %>
+      <%= render "category_table", f: f, category: nil, properties: properties %>
+    <% end %>
+
     <% @categories.each do |category| %>
       <%# TODO: Styling & Locales %>
       <h3><%= category.name %> Category</h3>
-      <%= render "category_table", f: f, category: category %>
+      <% properties = @product.product_properties.for_category(category) %>
+      <%= render "category_table", f: f, category: category, properties: properties %>
     <% end %>
 
     <%= render 'spree/admin/shared/edit_resource_links' %>
