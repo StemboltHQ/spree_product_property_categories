@@ -1,5 +1,5 @@
 Spree::Admin::ProductPropertiesController.class_eval do
-  before_filter :set_categories
+  before_filter :set_categories, except: :update_positions
 
   protected
 
