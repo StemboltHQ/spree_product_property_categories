@@ -4,8 +4,11 @@ class @PropertyEditPage
 
     this.fetchCategories()
 
-    @node.on 'click', 'button', =>
+    @node.on 'click', '.add-category', =>
       this.addCategory({name: 'New Category'})
+
+    @node.on 'click', '.save', =>
+      this.save()
 
     @node.on 'deleteCategory', (ev, category) =>
       this.categoryDeleted(category)
@@ -20,6 +23,12 @@ class @PropertyEditPage
 
   addCategory: (category) ->
     @category_editors.push new CategoryEditor(@node, category)
+
+  save: ->
+    data = this.serialize()
+
+  serialize: ->
+    categories = @category_editors.map (c) -> c.serialize()
 
 class CategoryEditor
   constructor: (@parent, @category) ->
@@ -43,9 +52,18 @@ class CategoryEditor
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
 
+  name: ->
+    @node.find("input[name='category_name']").val()
+
   propertyDeleted: (property) ->
     property.node.remove()
     @properties = @properties.filter (p) -> p isnt property
+
+  serialize: ->
+    {
+      name: this.name(),
+      properties: @properties.map (p) -> p.serialize()
+    }
 
 class ProductPropertyEditor
   constructor: (@category_editor, @parent, @property) ->
@@ -57,3 +75,12 @@ class ProductPropertyEditor
 
     @delete_button.click =>
       @parent.trigger 'deleteProperty', this
+
+  key: ->
+    @node.find("input[name='key']").val()
+
+  value: ->
+    @node.find("input[name='value']").val()
+
+  serialize: ->
+    { key: this.key(), value: this.value() }
