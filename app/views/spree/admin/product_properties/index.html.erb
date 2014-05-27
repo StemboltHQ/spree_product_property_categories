@@ -17,41 +17,26 @@
   <div><%= submit_tag "Create Category", class: "category_submit" %></div>
 </fieldset>
 
-<%= form_for @product, :url => admin_product_url(@product), :method => :put do |f| %>
-  <fieldset class="no-border-top">
-    <div class="add_product_properties" data-hook="add_product_properties"></div>
+<div class="category-edit-list">
+  <button name='.add-category'>Add Category</button>
+</div>
 
-    <div id="prototypes" data-hook></div>
-    <%= image_tag 'select2-spinner.gif', :plugin => 'spree', :style => 'display:none;', :id => 'busy_indicator' %>
+<script type="text/template" id="category-editor-template">
+<h2><input type="text" name="category_name" value="{{ category_editor.category.name }}" /></h2>
+  <span class="deleteCategory">Delete</span>
+  <span class="addProperty">Add Property</span>
+  <table>
+    <tbody>
+    </tbody>
+  </table>
+</script>
 
-    <div class="category_tables">
-      <% if @product.product_properties.uncategorized.any? %>
-        <h3>Uncategorized</h3>
-        <% properties = @product.product_properties.uncategorized %>
-        <%= render "category_table", f: f, category: nil, properties: properties %>
-      <% end %>
-
-      <% @categories.each do |category| %>
-        <%# TODO: Styling & Locales %>
-        <h3><%= category.name %> Category</h3>
-        <% properties = @product.product_properties.for_category(category) %>
-        <%= render "category_table", f: f, category: category, properties: properties %>
-      <% end %>
-    </div>
-
-    <%= render 'spree/admin/shared/edit_resource_links' %>
-
-    <%= hidden_field_tag 'clear_product_properties', 'true' %>
-  </fieldset>
-<% end %>
+<script type="text/template" id="property-editor-template">
+<td>  <input name='key' type="text" value='{{ property_editor.property.key }}' /></td>
+<td>  <input name='value' type="text" value='{{ property_editor.property.value }}' /></td>
+<td> <button class="delete-property">Delete</button> </td>
+</script>
 
 <%= javascript_tag do -%>
-  var properties = <%= raw(@properties.to_json) %>;
-  $('#product_properties').on('keydown', 'input.autocomplete', function() {
-    already_auto_completed = $(this).is('ac_input');
-    if (!already_auto_completed) {
-      $(this).autocomplete({source: properties});
-      $(this).focus();
-    }
-  });
-<% end -%>
+  new PropertyEditPage($(".category-edit-list"));
+<% end %>

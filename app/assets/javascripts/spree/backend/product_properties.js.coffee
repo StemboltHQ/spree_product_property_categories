@@ -1,42 +1,59 @@
-$ ->
-  # This is mostly a copy of sprees .add_spree_fields handler.
-  # It copies a row of the table and resets its values and appends it to the table.
-  # We need to preset the category name which is why we copied it.
-  $('.add-property-field').click ->
-    propertyFieldClickHandler($(@))
+class @PropertyEditPage
+  constructor: (@node) ->
+    @category_editors = []
 
-  $('.category_submit').click ->
-    category_name = $("#new_category_field").val()
-    table = document.$table = $(".category_tables").children("table").first().clone()
-    # Set required attributes
-    table.find("th.th-category-name").html(category_name + " Category")
-    property_field = table.find("a.add-property-field")
-    property_field.data("category-name", category_name)
-    property_field.data("target", "tbody#product_properties_" + category_name)
-    table.find("tbody").attr("id", "product_properties_" + category_name)
-    table.find("tbody").children().remove()
+    this.fetchCategories()
 
-    $(".category_tables").prepend(table)
-    document.table = table
-    $('body').on "click", "a.add-property-field", ->
-      propertyFieldClickHandler($(@))
+    @node.on 'click', 'button', =>
+      this.addCategory({name: 'New Category'})
 
-  propertyFieldClickHandler = ($element) ->
-    target = $element.data("target")
-    category_name = $element.data("category-name")
-    new_table_row = $(target + ' tr:visible:last').clone()
-    new_id = new Date().getTime()
-    new_table_row.find("input, select").each ->
-      element = $(@)
-      if /category_name/.test(element.prop("id"))
-        element.val(category_name)
-      else
-        element.val("")
-      element.prop("id", element.prop("id").replace(/\d+/, new_id))
-      element.prop("name", element.prop("name").replace(/\d+/, new_id))
-    new_table_row.find("a").each ->
-      $(@).prop('href', '#')
-    console.log($(target))
-    $(target).prepend(new_table_row)
+    @node.on 'deleteCategory', (ev, category) =>
+      this.categoryDeleted(category)
 
+  categoryDeleted: (category) ->
+    category.node.remove()
+    @categories = @category.filter (c) -> c isnt category
 
+  fetchCategories: ->
+    this.addCategory { name: 'Lols and stuff' }
+    this.addCategory { name: 'More Stuff' }
+
+  addCategory: (category) ->
+    @category_editors.push new CategoryEditor(@node, category)
+
+class CategoryEditor
+  constructor: (@parent, @category) ->
+    @properties = []
+
+    categoryEditorTemplate = _.template($("#category-editor-template").html())
+    @node = $("<div></div>").html(categoryEditorTemplate(category_editor: this))
+    @parent.append @node
+
+    @delete_button = @node.find '.deleteCategory'
+    @add_property_button = @node.find '.addProperty'
+    @property_rows = @node.find 'tbody'
+
+    @property_rows.on 'deleteProperty', (ev, property) =>
+      this.propertyDeleted(property)
+
+    @add_property_button.click =>
+      @properties.push new ProductPropertyEditor(this, @property_rows, {
+        key: '', value: ''})
+
+    @delete_button.click =>
+      @parent.trigger 'deleteCategory', this
+
+  propertyDeleted: (property) ->
+    property.node.remove()
+    @properties = @properties.filter (p) -> p isnt property
+
+class ProductPropertyEditor
+  constructor: (@category_editor, @parent, @property) ->
+    propertyEditorTemplate = _.template($("#property-editor-template").html())
+    @node = $("<tr></tr>").html(propertyEditorTemplate(property_editor: this))
+    @parent.append @node
+
+    @delete_button = @node.find '.delete-property'
+
+    @delete_button.click =>
+      @parent.trigger 'deleteProperty', this
