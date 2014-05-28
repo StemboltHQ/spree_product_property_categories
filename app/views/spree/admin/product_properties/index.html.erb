@@ -18,7 +18,7 @@
 </div>
 
 <script type="text/template" id="category-editor-template">
-<h2><input type="text" name="category_name" value="{{ category_editor.category.name }}" /></h2>
+<h2><input type="text" name="category_name" class='js-cat-name' value="{{ category_editor.category.name }}" /></h2>
   <span class="deleteCategory">Delete</span>
   <span class="addProperty">Add Property</span>
   <table>
@@ -28,11 +28,11 @@
 </script>
 
 <script type="text/template" id="property-editor-template">
-<td>  <input name='key' type="text" value='{{ property_editor.property.key }}' /></td>
-<td>  <input name='value' type="text" value='{{ property_editor.property.value }}' /></td>
+<td>  <input name='key' type="text" class='js-key' value='{{ property_editor.property.key }}' /></td>
+<td>  <input name='value' type="text" class='js-val' value='{{ property_editor.property.value }}' /></td>
 <td> <button class="delete-property">Delete</button> </td>
 </script>
 
 <%= javascript_tag do -%>
-  new PropertyEditPage($(".category-edit-list"), <%== @data %>);
+  new PropertyEditPage($(".category-edit-list"), <%== @data %>, "<%= @product.to_param %>");
 <% end %>

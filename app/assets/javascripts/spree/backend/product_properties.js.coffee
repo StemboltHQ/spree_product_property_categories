@@ -55,7 +55,7 @@ class CategoryEditor
       @parent.trigger 'deleteCategory', this
 
   name: ->
-    @node.find("input[name='category_name']").val()
+    @node.find(".js-cat-name").val()
 
   addProperty: (property) ->
     @properties.push new ProductPropertyEditor(this, @property_rows, property)
@@ -82,10 +82,10 @@ class ProductPropertyEditor
       @parent.trigger 'deleteProperty', this
 
   key: ->
-    @node.find("input[name='key']").val()
+    @node.find(".js-key").val()
 
   value: ->
-    @node.find("input[name='value']").val()
+    @node.find(".js-val").val()
 
   serialize: ->
     { key: this.key(), value: this.value() }
