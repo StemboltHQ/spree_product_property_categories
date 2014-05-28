@@ -7,7 +7,6 @@ Spree::Admin::ProductPropertiesController.class_eval do
 
     @data = categories.map do |cat|
       properties = cat.product_properties.where(product_id: @product.id)
-
       properties.map! do |property|
         {
           key: property.property_name,

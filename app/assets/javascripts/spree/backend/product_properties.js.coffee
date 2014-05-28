@@ -1,5 +1,5 @@
 class @PropertyEditPage
-  constructor: (@node, payload) ->
+  constructor: (@node, payload, @product_id) ->
     @category_editors = []
 
     this.fetchCategories(payload)
@@ -25,10 +25,24 @@ class @PropertyEditPage
     @category_editors.push new CategoryEditor(@node, category)
 
   save: ->
-    data = this.serialize()
+    payload = { product_id: @product_id, product_categories: this.serialize() }
+    $.ajax
+      type: 'POST'
+      dataType: 'json'
+      url: "/api/property_categories"
+      headers: 'x-spree-token': Spree.api_key
+      data: payload
+
+      success: (data) =>
+        show_flash("success", data.flash)
+      error: (data) =>
+        if data.flash
+          show_flash("error", data.flash)
+        else
+          show_flash("error", "There was an error updating your properties.")
 
   serialize: ->
-    categories = @category_editors.map (c) -> c.serialize()
+    @category_editors.map (c) -> c.serialize()
 
 class CategoryEditor
   constructor: (@parent, @category) ->
@@ -42,8 +56,9 @@ class CategoryEditor
     @add_property_button = @node.find '.addProperty'
     @property_rows = @node.find 'tbody'
 
-    $.each @category.properties, (index, item) =>
-      this.addProperty(item)
+    if @category.properties
+      $.each @category.properties, (index, item) =>
+        this.addProperty(item)
 
     @property_rows.on 'deleteProperty', (ev, property) =>
       this.propertyDeleted(property)
