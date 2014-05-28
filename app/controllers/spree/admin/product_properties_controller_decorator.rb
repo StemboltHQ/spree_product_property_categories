@@ -18,6 +18,19 @@ Spree::Admin::ProductPropertiesController.class_eval do
         name: cat.name,
         properties: properties
       }
-    end.to_json
+    end
+
+    uncategorized = @product.product_properties.where(category_id: nil)
+    if uncategorized.any?
+      uncategorized.map! do |property|
+        {
+          key: property.property_name,
+          value: property.value
+        }
+      end
+
+      @data << { name: nil, properties: uncategorized }
+    end
+    @data = @data.to_json
   end
 end

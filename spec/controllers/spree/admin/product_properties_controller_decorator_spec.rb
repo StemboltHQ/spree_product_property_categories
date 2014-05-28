@@ -56,7 +56,7 @@ describe Spree::Admin::ProductPropertiesController do
         let(:expected) do
           [
             {
-              name: "uncategorized",
+              name: nil,
               properties: [{
                 key: property.property_name,
                 value: property.value
@@ -65,8 +65,7 @@ describe Spree::Admin::ProductPropertiesController do
           ]
         end
 
-        it "sets a category name of 'uncategorized' and is included in the result" do
-          pending "not implimented yet"
+        it "sets a category name of nil and is included in the result" do
           get :index, product_id: product.to_param, use_route: :spree
           expect(subject).to eql(expected)
         end
