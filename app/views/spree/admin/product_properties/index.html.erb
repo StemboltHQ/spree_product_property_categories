@@ -34,5 +34,5 @@
 </script>
 
 <%= javascript_tag do -%>
-  new PropertyEditPage($(".category-edit-list"));
+  new PropertyEditPage($(".category-edit-list"), <%== @data %>);
 <% end %>

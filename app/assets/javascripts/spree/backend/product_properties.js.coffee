@@ -1,8 +1,8 @@
 class @PropertyEditPage
-  constructor: (@node) ->
+  constructor: (@node, payload) ->
     @category_editors = []
 
-    this.fetchCategories()
+    this.fetchCategories(payload)
 
     @node.on 'click', '.add-category', =>
       this.addCategory({name: 'New Category'})
@@ -17,9 +17,9 @@ class @PropertyEditPage
     category.node.remove()
     @categories = @category.filter (c) -> c isnt category
 
-  fetchCategories: ->
-    this.addCategory { name: 'Lols and stuff' }
-    this.addCategory { name: 'More Stuff' }
+  fetchCategories: (payload) ->
+    $.each payload, (index, item) =>
+      this.addCategory(item)
 
   addCategory: (category) ->
     @category_editors.push new CategoryEditor(@node, category)
@@ -42,18 +42,23 @@ class CategoryEditor
     @add_property_button = @node.find '.addProperty'
     @property_rows = @node.find 'tbody'
 
+    $.each @category.properties, (index, item) =>
+      this.addProperty(item)
+
     @property_rows.on 'deleteProperty', (ev, property) =>
       this.propertyDeleted(property)
 
     @add_property_button.click =>
-      @properties.push new ProductPropertyEditor(this, @property_rows, {
-        key: '', value: ''})
+      this.addProperty({key: '', value: ''})
 
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
 
   name: ->
     @node.find("input[name='category_name']").val()
+
+  addProperty: (property) ->
+    @properties.push new ProductPropertyEditor(this, @property_rows, property)
 
   propertyDeleted: (property) ->
     property.node.remove()
