@@ -15,7 +15,7 @@ class @PropertyEditPage
 
   categoryDeleted: (category) ->
     category.node.remove()
-    @categories = @category.filter (c) -> c isnt category
+    @category_editors = @category_editors.filter (c) -> c isnt category
 
   fetchCategories: (payload) ->
     $.each payload, (index, item) =>
