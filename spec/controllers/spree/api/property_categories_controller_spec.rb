@@ -6,6 +6,18 @@ describe Spree::Api::PropertyCategoriesController do
       allow(controller).to receive(:try_spree_current_user).and_return(create(:admin_user))
     end
 
+    def self.assert_bad_response
+      describe "response" do
+        it "is a bad request" do
+          expect(response.status).to eql(400)
+        end
+
+        it "returns a json hash with a flash key" do
+          expect(JSON.parse(response.body).keys).to include("flash")
+        end
+      end
+    end
+
     context "with a data parameter" do
       let(:request_params) do
         {
@@ -41,7 +53,7 @@ describe Spree::Api::PropertyCategoriesController do
         let(:product_slug) { product.to_param }
 
         describe "response" do
-          it "is a successful" do
+          it "is successful" do
             expect(response).to be_success
           end
 
@@ -66,30 +78,14 @@ describe Spree::Api::PropertyCategoriesController do
       context "without a valid product_id parameter" do
         let(:product_slug) { nil }
 
-        describe "response" do
-          it "is a bad request" do
-            expect(response.status).to eql(400)
-          end
-
-          it "returns a json hash with a flash key" do
-            expect(JSON.parse(response.body).keys).to include("flash")
-          end
-        end
+        assert_bad_response
       end
     end
 
     context "without a data parameter" do
       before { post :update, format: :json, use_route: :spree }
 
-      describe "response" do
-        it "is a bad request" do
-          expect(response.status).to eql(400)
-        end
-
-        it "returns a json hash with a flash key" do
-          expect(JSON.parse(response.body).keys).to include("flash")
-        end
-      end
+      assert_bad_response
     end
   end
 end
