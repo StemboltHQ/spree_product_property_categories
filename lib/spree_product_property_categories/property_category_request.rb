@@ -9,13 +9,14 @@ module Spree
       properties = []
       @params.values.each do |category|
         next unless category[:properties]
-        category[:properties].values.each do |pp|
+        category[:properties].values.each_with_index do |pp, i|
           next if pp[:key].blank?
           properties << {
             product: @product,
             category_name: category[:name].blank? ?  Spree.t(:default_category_name) : category[:name],
             property_name: pp[:key],
-            value: pp[:value]
+            value: pp[:value],
+            position: i
           }
         end
       end
