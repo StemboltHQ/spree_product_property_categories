@@ -37,7 +37,8 @@ describe Spree::PropertyCategoryRequest do
             product: product,
             category_name: "not null",
             property_name: "hello",
-            value: "world"
+            value: "world",
+            position: 0
           }]
           expect(subject).to eql(expected)
         end
