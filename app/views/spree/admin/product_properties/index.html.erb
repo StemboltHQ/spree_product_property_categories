@@ -12,46 +12,41 @@
   </ul>
 <% end %>
 
-<fieldset class="no-border-top">
-  <div><%= text_field_tag 'category_name', "", size: 50, id: "new_category_field" %></div>
-  <div><%= submit_tag "Create Category", class: "category_submit" %></div>
-</fieldset>
+<div class="category-edit-list">
+  <div class="category-buttons">
+    <a href="javascript:" class='button fa fa-plus add-category'>Add Category</a>
+    <a href="javascript:" class='button fa fa-save save'>Save</a>
+  </div>
+</div>
 
-<%= form_for @product, :url => admin_product_url(@product), :method => :put do |f| %>
-  <fieldset class="no-border-top">
-    <div class="add_product_properties" data-hook="add_product_properties"></div>
-
-    <div id="prototypes" data-hook></div>
-    <%= image_tag 'select2-spinner.gif', :plugin => 'spree', :style => 'display:none;', :id => 'busy_indicator' %>
-
-    <div class="category_tables">
-      <% if @product.product_properties.uncategorized.any? %>
-        <h3>Uncategorized</h3>
-        <% properties = @product.product_properties.uncategorized %>
-        <%= render "category_table", f: f, category: nil, properties: properties %>
-      <% end %>
-
-      <% @categories.each do |category| %>
-        <%# TODO: Styling & Locales %>
-        <h3><%= category.name %> Category</h3>
-        <% properties = @product.product_properties.for_category(category) %>
-        <%= render "category_table", f: f, category: category, properties: properties %>
-      <% end %>
+<script type="text/template" id="category-editor-template">
+  <div class='category-header'>
+    <h2><input type="text" name="category_name" class='js-cat-name' value="{{ category_editor.category.name }}" /></h2>
+    <div class='delete-link'>
+      <a href="javascript:" class="button fa fa-trash js-delete-category">Delete</a>
     </div>
+    <div class='add-property-link'>
+      <a href="javascript:" class="button fa fa-plus js-add-property">Add Property</a>
+    </div>
+  </div>
+  <table class='category-table'>
+    <thead>
+      <th>Name</th>
+      <th>Value</th>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</script>
 
-    <%= render 'spree/admin/shared/edit_resource_links' %>
-
-    <%= hidden_field_tag 'clear_product_properties', 'true' %>
-  </fieldset>
-<% end %>
+<script type="text/template" id="property-editor-template">
+<td><input name='key' type="text" class='js-key' value='{{ property_editor.property.key }}' /></td>
+<td><input name='value' type="text" class='js-val' value='{{ property_editor.property.value }}' /></td>
+<td class='actions'>
+  <%= link_to_with_icon "trash", Spree.t(:delete), "javascript:", no_text: true, class: "js-delete-property" %>
+</td>
+</script>
 
 <%= javascript_tag do -%>
-  var properties = <%= raw(@properties.to_json) %>;
-  $('#product_properties').on('keydown', 'input.autocomplete', function() {
-    already_auto_completed = $(this).is('ac_input');
-    if (!already_auto_completed) {
-      $(this).autocomplete({source: properties});
-      $(this).focus();
-    }
-  });
-<% end -%>
+  new PropertyEditPage($(".category-edit-list"), <%== @data %>, "<%= @product.to_param %>");
+<% end %>

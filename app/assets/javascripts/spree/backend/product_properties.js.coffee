@@ -1,42 +1,106 @@
-$ ->
-  # This is mostly a copy of sprees .add_spree_fields handler.
-  # It copies a row of the table and resets its values and appends it to the table.
-  # We need to preset the category name which is why we copied it.
-  $('.add-property-field').click ->
-    propertyFieldClickHandler($(@))
+class @PropertyEditPage
+  constructor: (@node, payload, @product_id) ->
+    @category_editors = []
 
-  $('.category_submit').click ->
-    category_name = $("#new_category_field").val()
-    table = document.$table = $(".category_tables").children("table").first().clone()
-    # Set required attributes
-    table.find("th.th-category-name").html(category_name + " Category")
-    property_field = table.find("a.add-property-field")
-    property_field.data("category-name", category_name)
-    property_field.data("target", "tbody#product_properties_" + category_name)
-    table.find("tbody").attr("id", "product_properties_" + category_name)
-    table.find("tbody").children().remove()
+    @fetchCategories(payload)
 
-    $(".category_tables").prepend(table)
-    document.table = table
-    $('body').on "click", "a.add-property-field", ->
-      propertyFieldClickHandler($(@))
+    @node.on 'click', '.add-category', =>
+      @addCategory({name: 'New Category'})
 
-  propertyFieldClickHandler = ($element) ->
-    target = $element.data("target")
-    category_name = $element.data("category-name")
-    new_table_row = $(target + ' tr:visible:last').clone()
-    new_id = new Date().getTime()
-    new_table_row.find("input, select").each ->
-      element = $(@)
-      if /category_name/.test(element.prop("id"))
-        element.val(category_name)
-      else
-        element.val("")
-      element.prop("id", element.prop("id").replace(/\d+/, new_id))
-      element.prop("name", element.prop("name").replace(/\d+/, new_id))
-    new_table_row.find("a").each ->
-      $(@).prop('href', '#')
-    console.log($(target))
-    $(target).prepend(new_table_row)
+    @node.on 'click', '.save', =>
+      @save()
 
+    @node.on 'deleteCategory', (ev, category) =>
+      @categoryDeleted(category)
 
+  categoryDeleted: (category) ->
+    category.node.remove()
+    @category_editors = @category_editors.filter (c) -> c isnt category
+
+  fetchCategories: (payload) ->
+    $.each payload, (index, item) =>
+      @addCategory(item)
+
+  addCategory: (category) ->
+    @category_editors.push new CategoryEditor(@node, category)
+
+  save: ->
+    payload = { product_id: @product_id, product_categories: @serialize() }
+    $.ajax
+      type: 'POST'
+      dataType: 'json'
+      url: "/api/property_categories"
+      headers: 'x-spree-token': Spree.api_key
+      data: payload
+
+      success: (data) =>
+        show_flash("success", data.flash)
+      error: (data) =>
+        if data.flash
+          show_flash("error", data.flash)
+        else
+          show_flash("error", "There was an error updating your properties.")
+
+  serialize: ->
+    @category_editors.map (c) -> c.serialize()
+
+class CategoryEditor
+  constructor: (@parent, @category) ->
+    @properties = []
+
+    categoryEditorTemplate = _.template($("#category-editor-template").html())
+    @node = $("<div></div>").html(categoryEditorTemplate(category_editor: this))
+    @parent.append @node
+
+    @delete_button = @node.find '.js-delete-category'
+    @add_property_button = @node.find '.js-add-property'
+    @property_rows = @node.find 'tbody'
+
+    if @category.properties
+      $.each @category.properties, (index, item) =>
+        @addProperty(item)
+
+    @property_rows.on 'deleteProperty', (ev, property) =>
+      @propertyDeleted(property)
+
+    @add_property_button.click =>
+      @addProperty({key: '', value: ''})
+
+    @delete_button.click =>
+      @parent.trigger 'deleteCategory', this
+
+  name: ->
+    @node.find(".js-cat-name").val()
+
+  addProperty: (property) ->
+    @properties.push new ProductPropertyEditor(this, @property_rows, property)
+
+  propertyDeleted: (property) ->
+    property.node.remove()
+    @properties = @properties.filter (p) -> p isnt property
+
+  serialize: ->
+    {
+      name: @name(),
+      properties: @properties.map (p) -> p.serialize()
+    }
+
+class ProductPropertyEditor
+  constructor: (@category_editor, @parent, @property) ->
+    propertyEditorTemplate = _.template($("#property-editor-template").html())
+    @node = $("<tr></tr>").html(propertyEditorTemplate(property_editor: this))
+    @parent.append @node
+
+    @delete_button = @node.find '.js-delete-property'
+
+    @delete_button.click =>
+      @parent.trigger 'deleteProperty', this
+
+  key: ->
+    @node.find(".js-key").val()
+
+  value: ->
+    @node.find(".js-val").val()
+
+  serialize: ->
+    { key: @key(), value: @value() }

@@ -1,0 +1,23 @@
+.category-edit-list {
+  .category-buttons {
+    margin-bottom: 2em;
+  }
+
+  .category-header {
+    display: inline-block;
+    width: 100%;
+    h2 { display: inline-block; }
+    .delete-link, .add-property-link {
+      display: inline-block;
+      float: right;
+      line-height: 44px;
+      margin-left: 0.5em;
+    }
+    margin-bottom: 0.5em;
+  }
+
+  .property-actions {
+    text-align: center;
+  }
+}
+

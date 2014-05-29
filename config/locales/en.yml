@@ -4,3 +4,6 @@
 en:
   spree:
     category: Category
+    property_update_success: "Product properties were updated successfully."
+    property_update_failure: "There was an error updating the product properties."
+    default_category_name: "Uncategorized"

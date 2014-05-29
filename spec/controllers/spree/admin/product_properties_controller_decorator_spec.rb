@@ -4,29 +4,70 @@ describe Spree::Admin::ProductPropertiesController do
   stub_authorization!
 
   describe "GET index" do
-    describe "assigns(:categories)" do
-      let!(:product) { create :product }
-      let!(:property) { create :product_property, product: product, category: category }
+    let!(:product) { create :product }
 
+    describe "response" do
       before do
         get :index, product_id: product.to_param, use_route: :spree
       end
 
-      subject { assigns(:categories).to_a }
+      it "is successful" do
+        expect(response).to be_success
+      end
 
-      context "when product properties exist with categories" do
-        let(:category) { Spree::PropertyCategory.create!(name: "sups") }
+      it "renders the index action" do
+        expect(response).to render_template(:index)
+      end
+    end
 
-        it "contains those categories" do
-          expect(subject).to eql([category])
+    describe "assigns(:data)" do
+      subject { JSON.parse(assigns(:data), symbolize_names: true) }
+
+      context "with no product properties" do
+        it "is an empty json array" do
+          get :index, product_id: product.to_param, use_route: :spree
+          expect(subject).to be_empty
         end
       end
 
-      context "when product properties dont exist or are without categories" do
-        let(:category) { nil }
+      context "with product properties that have a category" do
+        let!(:property) { create :product_property, product: product, category: category }
+        let!(:category) { Spree::PropertyCategory.create(name: "test") }
+        let(:expected) do
+          [
+            {
+              name: "test",
+              properties: [{
+                key: property.property_name,
+                value: property.value
+              }]
+            }
+          ]
+        end
 
-        it "is empty" do
-          expect(subject).to be_empty
+        it "has the correct format" do
+          get :index, product_id: product.to_param, use_route: :spree
+          expect(subject).to eql(expected)
+        end
+      end
+
+      context "with product properties that have no category" do
+        let!(:property) { create :product_property, product: product, category: nil }
+        let(:expected) do
+          [
+            {
+              name: nil,
+              properties: [{
+                key: property.property_name,
+                value: property.value
+              }]
+            }
+          ]
+        end
+
+        it "sets a category name of nil and is included in the result" do
+          get :index, product_id: product.to_param, use_route: :spree
+          expect(subject).to eql(expected)
         end
       end
     end
