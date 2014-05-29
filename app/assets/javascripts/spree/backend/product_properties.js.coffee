@@ -49,12 +49,21 @@ class CategoryEditor
     @properties = []
 
     categoryEditorTemplate = _.template($("#category-editor-template").html())
-    @node = $("<div></div>").html(categoryEditorTemplate(category_editor: this))
+    @node = $("<div class='js-category-node'>").html(categoryEditorTemplate(category_editor: this))
     @parent.append @node
 
     @delete_button = @node.find '.js-delete-category'
     @add_property_button = @node.find '.js-add-property'
     @property_rows = @node.find 'tbody'
+
+    @node.find("tbody").sortable
+      handle: '.handle',
+      update: =>
+        @sortProperties()
+      placeholder: 'ui-sortable-placeholder',
+      start: (event, ui) =>
+        ui.placeholder.height(ui.item.height())
+        ui.placeholder.html "<td colspan='#{@node.find('th').length + 1}'></td><td class='actions'></td>"
 
     if @category.properties
       $.each @category.properties, (index, item) =>
@@ -85,10 +94,13 @@ class CategoryEditor
       properties: @properties.map (p) -> p.serialize()
     }
 
+  sortProperties: ->
+    @properties = _.sortBy @properties, (p) -> p.node.index()
+
 class ProductPropertyEditor
   constructor: (@category_editor, @parent, @property) ->
     propertyEditorTemplate = _.template($("#property-editor-template").html())
-    @node = $("<tr></tr>").html(propertyEditorTemplate(property_editor: this))
+    @node = $("<tr>").html(propertyEditorTemplate(property_editor: this))
     @parent.append @node
 
     @delete_button = @node.find '.js-delete-property'
