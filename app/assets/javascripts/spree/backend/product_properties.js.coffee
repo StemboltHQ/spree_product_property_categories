@@ -52,8 +52,8 @@ class CategoryEditor
     @node = $("<div></div>").html(categoryEditorTemplate(category_editor: this))
     @parent.append @node
 
-    @delete_button = @node.find '.deleteCategory'
-    @add_property_button = @node.find '.addProperty'
+    @delete_button = @node.find '.js-delete-category'
+    @add_property_button = @node.find '.js-add-property'
     @property_rows = @node.find 'tbody'
 
     if @category.properties
@@ -91,7 +91,7 @@ class ProductPropertyEditor
     @node = $("<tr></tr>").html(propertyEditorTemplate(property_editor: this))
     @parent.append @node
 
-    @delete_button = @node.find '.delete-property'
+    @delete_button = @node.find '.js-delete-property'
 
     @delete_button.click =>
       @parent.trigger 'deleteProperty', this

@@ -13,24 +13,38 @@
 <% end %>
 
 <div class="category-edit-list">
-  <button class='add-category'>Add Category</button>
-  <button class='save'>Save</button>
+  <div class="category-buttons">
+    <a href="javascript:" class='button fa fa-plus add-category'>Add Category</a>
+    <a href="javascript:" class='button fa fa-save save'>Save</a>
+  </div>
 </div>
 
 <script type="text/template" id="category-editor-template">
-<h2><input type="text" name="category_name" class='js-cat-name' value="{{ category_editor.category.name }}" /></h2>
-  <span class="deleteCategory">Delete</span>
-  <span class="addProperty">Add Property</span>
-  <table>
+  <div class='category-header'>
+    <h2><input type="text" name="category_name" class='js-cat-name' value="{{ category_editor.category.name }}" /></h2>
+    <div class='delete-link'>
+      <a href="javascript:" class="button fa fa-trash js-delete-category">Delete</a>
+    </div>
+    <div class='add-property-link'>
+      <a href="javascript:" class="button fa fa-plus js-add-property">Add Property</a>
+    </div>
+  </div>
+  <table class='category-table'>
+    <thead>
+      <th>Name</th>
+      <th>Value</th>
+    </thead>
     <tbody>
     </tbody>
   </table>
 </script>
 
 <script type="text/template" id="property-editor-template">
-<td>  <input name='key' type="text" class='js-key' value='{{ property_editor.property.key }}' /></td>
-<td>  <input name='value' type="text" class='js-val' value='{{ property_editor.property.value }}' /></td>
-<td> <button class="delete-property">Delete</button> </td>
+<td><input name='key' type="text" class='js-key' value='{{ property_editor.property.key }}' /></td>
+<td><input name='value' type="text" class='js-val' value='{{ property_editor.property.value }}' /></td>
+<td class='actions'>
+  <%= link_to_with_icon "trash", Spree.t(:delete), "javascript:", no_text: true, class: "js-delete-property" %>
+</td>
 </script>
 
 <%= javascript_tag do -%>
