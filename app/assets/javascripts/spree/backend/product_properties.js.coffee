@@ -56,6 +56,15 @@ class CategoryEditor
     @add_property_button = @node.find '.js-add-property'
     @property_rows = @node.find 'tbody'
 
+    @node.find("tbody").sortable
+      handle: '.handle',
+      update: =>
+        @sortProperties()
+      placeholder: 'ui-sortable-placeholder',
+      start: (event, ui) =>
+        ui.placeholder.height(ui.item.height())
+        ui.placeholder.html "<td colspan='#{@node.find('th').length + 1}'></td><td class='actions'></td>"
+
     if @category.properties
       $.each @category.properties, (index, item) =>
         @addProperty(item)
@@ -68,10 +77,6 @@ class CategoryEditor
 
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
-
-    @node.on "updateProperties", (event) =>
-      @properties = _.sortBy @properties, (property) ->
-        property.node.find(".js-position").val()
 
   name: ->
     @node.find(".js-cat-name").val()
@@ -88,6 +93,9 @@ class CategoryEditor
       name: @name(),
       properties: @properties.map (p) -> p.serialize()
     }
+
+  sortProperties: ->
+    @properties = _.sortBy @properties, (p) -> p.node.index()
 
 class ProductPropertyEditor
   constructor: (@category_editor, @parent, @property) ->
@@ -108,30 +116,3 @@ class ProductPropertyEditor
 
   serialize: ->
     { key: @key(), value: @value() }
-
-$('table.js-category-table').ready ->
-  td_count = $(this).find('tbody tr:first-child').first().children().length
-  $('table.js-category-table tbody').sortable
-    handle: '.handle',
-    helper: (event, ui) ->
-      ui.children().each ->
-        $(this).width($(this).width())
-      ui
-    update: ->
-      rows = $(this).find("tr")
-      $.each rows, (index, row) ->
-        position = $(row).find(".js-position")
-        if position.length > 0
-          position.attr("value", index)
-        else
-          input = $("<input />").attr
-            type: "hidden",
-            class: "js-position",
-            value: index
-          input.appendTo(row)
-
-      $(this).closest(".js-category-node").trigger "updateProperties"
-    placeholder: 'ui-sortable-placeholder',
-    start: (event, ui) ->
-      ui.placeholder.height(ui.item.height())
-      ui.placeholder.html "<td colspan='#{td_count - 1}'></td><td class='actions'></td>"
