@@ -1,15 +1,25 @@
-<% unless @product_properties.empty? %>  
+<% product_properties = @product_properties.includes(:category) %>
+<% unless product_properties.empty? %>
   <h6 class="product-section-title"><%= Spree.t('properties')%></h6>
+  <% properties_by_category = product_properties.group_by{ |pp| pp.category.try(:name) || "" }.to_a %>
+  <% properties_by_category.sort_by! { |x| x[0] } %>
   <table id="product-properties" class="table-display" data-hook>
     <tbody>
-      <% @product_properties.each do |product_property| %>
-        <% css_class = cycle('even', 'odd', :name => "properties") %>
-        <tr class="<%= css_class %>">
-          <td><strong><%= product_property.property.presentation %></strong></td>
-          <td><%= product_property.value %></td>
+      <% properties_by_category.each do |category_name, properties| %>
+        <% if category_name.present? %>
+        <tr>
+          <td colspan="2"><%= category_name %></td>
         </tr>
       <% end %>
-      <% reset_cycle('properties') %>
+        <% properties.each do |pp| %>
+          <% css_class = cycle('even', 'odd', :name => "properties") %>
+          <tr class="<%= css_class %> category-name">
+            <td><strong><%= pp.property.presentation %></strong></td>
+            <td><%= pp.value %></td>
+          </tr>
+        <% end %>
+        <% reset_cycle('properties') %>
+      <% end %>
     </tbody>
   </table>
 <% end %>
