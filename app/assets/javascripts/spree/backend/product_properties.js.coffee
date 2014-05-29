@@ -49,7 +49,7 @@ class CategoryEditor
     @properties = []
 
     categoryEditorTemplate = _.template($("#category-editor-template").html())
-    @node = $("<div></div>").html(categoryEditorTemplate(category_editor: this))
+    @node = $("<div class='js-category-node'></div>").html(categoryEditorTemplate(category_editor: this))
     @parent.append @node
 
     @delete_button = @node.find '.js-delete-category'
@@ -68,6 +68,10 @@ class CategoryEditor
 
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
+
+    @node.on "updateProperties", (event) =>
+      @properties = _.sortBy @properties, (property) ->
+        property.node.find(".js-position").val()
 
   name: ->
     @node.find(".js-cat-name").val()
@@ -106,13 +110,26 @@ class ProductPropertyEditor
     { key: @key(), value: @value() }
 
 $('table.js-category-table').ready ->
-  td_count = $(@).find('tbody tr:first-child').first().children().length
+  td_count = $(this).find('tbody tr:first-child').first().children().length
   $('table.js-category-table tbody').sortable
     handle: '.handle',
     helper: (event, ui) ->
       ui.children().each ->
-        $(@).width($(@).width())
+        $(this).width($(this).width())
       return ui
+    update: ->
+      rows = $(this).find("tr")
+      $.each rows, (index, row) =>
+        if $(row).find(".js-position").length > 0
+          $(row).find(".js-position").attr("value", index)
+        else
+          input = $("<input />").attr
+            type: "hidden",
+            class: "js-position",
+            value: index
+          input.appendTo(row)
+
+      $(this).closest(".js-category-node").trigger "updateProperties"
     placeholder: 'ui-sortable-placeholder',
     start: (event, ui) ->
       ui.placeholder.height(ui.item.height())
