@@ -8,7 +8,7 @@
       <% properties_by_category.each do |category_name, properties| %>
         <% if category_name.present? %>
         <tr>
-          <td colspan="2"><%= category_name %></td>
+          <td class="category-header" colspan="2"><%= category_name %></td>
         </tr>
       <% end %>
         <% properties.each do |pp| %>
