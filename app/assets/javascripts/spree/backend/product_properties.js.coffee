@@ -2,16 +2,16 @@ class @PropertyEditPage
   constructor: (@node, payload, @product_id) ->
     @category_editors = []
 
-    this.fetchCategories(payload)
+    @fetchCategories(payload)
 
     @node.on 'click', '.add-category', =>
-      this.addCategory({name: 'New Category'})
+      @addCategory({name: 'New Category'})
 
     @node.on 'click', '.save', =>
-      this.save()
+      @save()
 
     @node.on 'deleteCategory', (ev, category) =>
-      this.categoryDeleted(category)
+      @categoryDeleted(category)
 
   categoryDeleted: (category) ->
     category.node.remove()
@@ -19,13 +19,13 @@ class @PropertyEditPage
 
   fetchCategories: (payload) ->
     $.each payload, (index, item) =>
-      this.addCategory(item)
+      @addCategory(item)
 
   addCategory: (category) ->
     @category_editors.push new CategoryEditor(@node, category)
 
   save: ->
-    payload = { product_id: @product_id, product_categories: this.serialize() }
+    payload = { product_id: @product_id, product_categories: @serialize() }
     $.ajax
       type: 'POST'
       dataType: 'json'
@@ -58,13 +58,13 @@ class CategoryEditor
 
     if @category.properties
       $.each @category.properties, (index, item) =>
-        this.addProperty(item)
+        @addProperty(item)
 
     @property_rows.on 'deleteProperty', (ev, property) =>
-      this.propertyDeleted(property)
+      @propertyDeleted(property)
 
     @add_property_button.click =>
-      this.addProperty({key: '', value: ''})
+      @addProperty({key: '', value: ''})
 
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
@@ -81,7 +81,7 @@ class CategoryEditor
 
   serialize: ->
     {
-      name: this.name(),
+      name: @name(),
       properties: @properties.map (p) -> p.serialize()
     }
 
@@ -103,4 +103,4 @@ class ProductPropertyEditor
     @node.find(".js-val").val()
 
   serialize: ->
-    { key: this.key(), value: this.value() }
+    { key: @key(), value: @value() }
