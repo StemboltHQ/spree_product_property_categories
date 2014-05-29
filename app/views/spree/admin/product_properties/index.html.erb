@@ -29,9 +29,9 @@
       <a href="javascript:" class="button fa fa-plus js-add-property">Add Property</a>
     </div>
   </div>
-  <table class='category-table'>
+  <table class='category-table js-category-table'>
     <thead>
-      <th>Name</th>
+      <th colspan='2'>Name</th>
       <th>Value</th>
     </thead>
     <tbody>
@@ -40,6 +40,9 @@
 </script>
 
 <script type="text/template" id="property-editor-template">
+  <td class='no-border'>
+    <span class="handle"></span>
+  </td>
 <td><input name='key' type="text" class='js-key' value='{{ property_editor.property.key }}' /></td>
 <td><input name='value' type="text" class='js-val' value='{{ property_editor.property.value }}' /></td>
 <td class='actions'>

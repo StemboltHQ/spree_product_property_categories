@@ -104,3 +104,16 @@ class ProductPropertyEditor
 
   serialize: ->
     { key: @key(), value: @value() }
+
+$('table.js-category-table').ready ->
+  td_count = $(@).find('tbody tr:first-child').first().children().length
+  $('table.js-category-table tbody').sortable
+    handle: '.handle',
+    helper: (event, ui) ->
+      ui.children().each ->
+        $(@).width($(@).width())
+      return ui
+    placeholder: 'ui-sortable-placeholder',
+    start: (event, ui) ->
+      ui.placeholder.height(ui.item.height())
+      ui.placeholder.html "<td colspan='" + (td_count - 1) + "'></td><td class='actions'></td>"
