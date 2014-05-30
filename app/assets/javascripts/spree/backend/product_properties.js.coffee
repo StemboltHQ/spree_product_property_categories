@@ -13,6 +13,15 @@ class @PropertyEditPage
     @node.on 'deleteCategory', (ev, category) =>
       @categoryDeleted(category)
 
+    @node.sortable
+      handle: '.category-handle',
+      placeholder: 'ui-sortable-placeholder',
+      items: ".js-category-node"
+      start: (event, ui) ->
+        ui.placeholder.height(ui.item.height())
+        ui.placeholder.html "<div style='height:#{ui.item.height()}; width:#{ui.item.width()};'></div>"
+
+
   categoryDeleted: (category) ->
     category.node.remove()
     @category_editors = @category_editors.filter (c) -> c isnt category
