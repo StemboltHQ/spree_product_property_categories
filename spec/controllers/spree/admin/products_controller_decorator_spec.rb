@@ -20,8 +20,12 @@ describe Spree::Admin::ProductsController do
         let(:property_attributes) {{
           "0" => {
             property_name: "test property",
-            category_name: "test category",
-            value: "1234"
+            value: "1234",
+            product_property_category_attributes: {
+              property_category_attributes: {
+                name: "test category"
+              }
+            }
           }
         }}
 
@@ -31,7 +35,7 @@ describe Spree::Admin::ProductsController do
         end
 
         it "creates a product property with the appropriate category" do
-          expect(assigns(:product).product_properties.last.category.name).to eql("test category")
+          expect(assigns(:product).product_properties.last.category_name).to eql("test category")
         end
       end
 
@@ -48,7 +52,7 @@ describe Spree::Admin::ProductsController do
         end
 
         it "does not create a category with the product property" do
-          expect(assigns(:product).product_properties.last.category).to be_nil
+          expect(assigns(:product).product_properties.last.property_category).to be_nil
         end
       end
     end

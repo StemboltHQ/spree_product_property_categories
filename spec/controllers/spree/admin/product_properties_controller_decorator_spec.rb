@@ -31,7 +31,7 @@ describe Spree::Admin::ProductPropertiesController do
       end
 
       context "with product properties that have a category" do
-        let!(:property) { create :product_property, product: product, category: category }
+        let!(:property) { create :product_property, product: product, property_category: category }
         let!(:category) { Spree::PropertyCategory.create(name: "test") }
         let(:expected) do
           [
@@ -52,7 +52,7 @@ describe Spree::Admin::ProductPropertiesController do
       end
 
       context "with product properties that have no category" do
-        let!(:property) { create :product_property, product: product, category: nil }
+        let!(:property) { create :product_property, product: product }
         let(:expected) do
           [
             {

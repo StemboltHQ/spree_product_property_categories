@@ -1,5 +1,6 @@
 class Spree::PropertyCategory < ActiveRecord::Base
-  has_many :product_properties, inverse_of: :category, foreign_key: "category_id"
+  has_many :product_property_categories
+  has_many :product_properties, through: :product_property_categories
   validates :name, presence: true
 
   scope :for_product, ->(product) do

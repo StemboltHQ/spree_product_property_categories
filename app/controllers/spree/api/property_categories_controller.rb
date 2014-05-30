@@ -10,9 +10,7 @@ module Spree
         if params[:product_categories] && product = Spree::Product.find_by(slug: params[:product_id])
           Spree::PropertyCategory.transaction do
             product.product_properties.destroy_all
-
             property_request = Spree::PropertyCategoryRequest.new(params[:product_categories], product)
-
             property_request.properties.each do |property|
               Spree::ProductProperty.create!(property)
             end
