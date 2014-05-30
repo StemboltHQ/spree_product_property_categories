@@ -1,8 +1,8 @@
-<% product_properties = @product_properties.includes(:category) %>
+<% product_properties = @product_properties.includes(:property_category) %>
 <% unless product_properties.empty? %>
   <h6 class="product-section-title"><%= Spree.t('properties')%></h6>
-  <% properties_by_category = product_properties.group_by{ |pp| pp.category.try(:name) || "" }.to_a %>
-  <% properties_by_category.sort_by! { |x| x[0] } %>
+  <% properties_by_category = product_properties.group_by{ |pp| pp.property_category.try(:name) || "" }.to_a %>
+  <% properties_by_category.sort_by! { |x| x[1].first.product_property_category.position } %>
   <table id="product-properties" class="table-display" data-hook>
     <tbody>
       <% properties_by_category.each do |category_name, properties| %>
@@ -12,6 +12,7 @@
         </tr>
       <% end %>
         <% properties.each do |pp| %>
+          <% next unless pp.value.present? %>
           <% css_class = cycle('even', 'odd', :name => "properties") %>
           <tr class="<%= css_class %> category-name">
             <td><strong><%= pp.property.presentation %></strong></td>
