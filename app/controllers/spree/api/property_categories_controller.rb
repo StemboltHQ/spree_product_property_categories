@@ -6,7 +6,6 @@ module Spree
       def update
         authorize! :update, Spree::PropertyCategory
 
-
         if params[:product_categories] && product = Spree::Product.find_by(slug: params[:product_id])
           Spree::PropertyCategory.transaction do
             product.product_properties.destroy_all

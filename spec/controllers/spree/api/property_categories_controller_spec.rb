@@ -23,6 +23,7 @@ describe Spree::Api::PropertyCategoriesController do
         {
           "0" => {
             name: "test_category",
+            position: 0,
             properties: {
               "0" => {
                 key: "test_key",
@@ -32,6 +33,7 @@ describe Spree::Api::PropertyCategoriesController do
           },
           "1" => {
             name: "",
+            position: 1,
             properties: {
               "0" => {
                 key: "test",

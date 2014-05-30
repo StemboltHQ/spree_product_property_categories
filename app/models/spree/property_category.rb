@@ -4,6 +4,7 @@ class Spree::PropertyCategory < ActiveRecord::Base
   validates :name, presence: true
 
   scope :for_product, ->(product) do
-    joins(product_properties: :product).where(spree_products: { id: product.id }).uniq
+    joins(product_properties: :product).where(spree_products: { id: product.id }).uniq.
+      order("spree_product_property_categories.position ASC")
   end
 end

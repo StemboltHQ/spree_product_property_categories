@@ -17,7 +17,7 @@ module Spree
             value: pp[:value],
             position: i,
             product_property_category_attributes: {
-              position: 0,
+              position: category[:position],
               property_category_attributes: {
                 name: category[:name].blank? ?
                 Spree.t(:default_category_name) :

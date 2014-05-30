@@ -29,7 +29,7 @@ Spree::Admin::ProductPropertiesController.class_eval do
         }
       end
 
-      @data << { name: nil, properties: uncategorized }
+      @data.unshift({ name: "", properties: uncategorized })
     end
     @data = @data.to_json
   end

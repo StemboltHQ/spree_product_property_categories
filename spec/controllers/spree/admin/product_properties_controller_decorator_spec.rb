@@ -56,7 +56,7 @@ describe Spree::Admin::ProductPropertiesController do
         let(:expected) do
           [
             {
-              name: nil,
+              name: "",
               properties: [{
                 key: property.property_name,
                 value: property.value

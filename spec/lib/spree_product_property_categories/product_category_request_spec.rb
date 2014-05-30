@@ -8,6 +8,7 @@ describe Spree::PropertyCategoryRequest do
       {
         "0" => {
           name: category_name,
+          position: 0,
           properties: category_properties
         }
       }
