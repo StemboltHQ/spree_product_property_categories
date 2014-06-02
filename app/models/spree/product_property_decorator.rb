@@ -10,6 +10,10 @@ Spree::ProductProperty.class_eval do
       references(:property_category)
   end
 
+  scope :displayable, -> do
+    where(display: true)
+  end
+
   def category_name
     property_category.name if property_category
   end
