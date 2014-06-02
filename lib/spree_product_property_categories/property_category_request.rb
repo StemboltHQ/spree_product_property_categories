@@ -11,10 +11,12 @@ module Spree
         next unless category[:properties]
         category[:properties].values.each_with_index do |pp, i|
           next if pp[:key].blank?
+          display = (pp[:display] == "1" ? true : false)
           properties << {
             product: @product,
             property_name: pp[:key],
             value: pp[:value],
+            display: display,
             position: i,
             product_property_category_attributes: {
               position: category[:position],

@@ -30,7 +30,7 @@ describe Spree::PropertyCategoryRequest do
     context "with a request containing a category with properties" do
       let(:category_name) { "not null" }
       let(:category_properties) {{"0" => property }}
-      let(:property) {{ key: "hello", value: "world" }}
+      let(:property) {{ display: "1", key: "hello", value: "world" }}
 
       context "with a property with a key and a value" do
         it "is formatted correctly" do
@@ -39,6 +39,7 @@ describe Spree::PropertyCategoryRequest do
             property_name: "hello",
             value: "world",
             position: 0,
+            display: true,
             product_property_category_attributes: {
               position: 0,
               property_category_attributes: { name: "not null" }

@@ -124,5 +124,8 @@ class ProductPropertyEditor
   value: ->
     @node.find('.js-val').val()
 
+  display: ->
+    if @node.find(".js-display").is(":checked") then "1" else "0"
+
   serialize: ->
-    { key: @key(), value: @value() }
+    { key: @key(), value: @value(), display: @display() }
