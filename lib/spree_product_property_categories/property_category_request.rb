@@ -17,7 +17,8 @@ module Spree
             property_name: pp[:key],
             value: pp[:value],
             display: display,
-            position: i
+            position: i,
+            measurement_unit: pp[:measurement]
           }
 
           if category[:name].present?

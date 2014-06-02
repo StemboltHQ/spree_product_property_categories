@@ -62,8 +62,8 @@ class @PropertyEditPage
       success: (data) =>
         show_flash('success', data.flash)
       error: (data) =>
-        if data.flash
-          show_flash('error', data.flash)
+        if flash = data.responseJSON.flash
+          show_flash('error', flash)
         else
           show_flash('error', 'There was an error updating your properties.')
 
@@ -154,5 +154,8 @@ class ProductPropertyEditor
   display: ->
     if @node.find(".js-display").is(":checked") then "1" else "0"
 
+  measurement: ->
+    @node.find(".js-measurement").val()
+
   serialize: ->
-    { key: @key(), value: @value(), display: @display() }
+    { key: @key(), value: @value(), display: @display(), measurement: @measurement() }

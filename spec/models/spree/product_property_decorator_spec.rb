@@ -19,4 +19,54 @@ describe Spree::ProductProperty do
       its(:category_name) { should eql("Hello World") }
     end
   end
+
+  describe "#valid?" do
+    let!(:property) { build_stubbed :property }
+    subject { described_class.new(attributes).valid? }
+
+    let(:attributes) do
+      {
+        property: build_stubbed(:property),
+        product: build_stubbed(:product),
+        measurement_unit: mu,
+        value: val
+      }
+    end
+
+    context "With a 'None' measurement unit" do
+      let(:mu) { "None" }
+
+      context "with any value" do
+        let(:val) { "shgs" }
+
+        it { should be_true }
+      end
+    end
+
+    context "With a valid measurement unit other than 'None'" do
+      let(:mu) { "Inches" }
+
+      context "with a numeric value" do
+        let(:val) { "54" }
+
+        it { should be_true }
+      end
+
+      context "with any other value" do
+        let(:val) { "hello world" }
+
+        it { should be_false }
+      end
+    end
+
+    context "With a invalid measurement unit" do
+      let(:mu) { "cats" }
+
+      context "with any value" do
+        let(:val) { "hello" }
+
+        it { should be_false }
+      end
+    end
+  end
 end

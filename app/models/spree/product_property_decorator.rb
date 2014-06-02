@@ -14,6 +14,10 @@ Spree::ProductProperty.class_eval do
     ]
   end
 
+  validates :measurement_unit, inclusion: { in: Spree::ProductProperty.measurement_units }
+  validates :value, numericality: true, allow_blank: true,
+    if: ->(pp) { pp.measurement_unit != "None" }
+
   scope :uncategorized, -> do
     includes(:property_category).
       where("spree_property_categories.id is null").
