@@ -35,6 +35,7 @@
       <th colspan='2'>Name</th>
       <th>Value</th>
       <th>Display</th>
+      <th>Measurement</th>
     </thead>
     <tbody>
     </tbody>
@@ -49,6 +50,9 @@
 <td><input name='value' type="text" class='js-val' value='{{ property_editor.property.value }}' /></td>
 <td>
   <input name='display' type='checkbox' class='js-display' value='display' {{ property_editor.property.display ? "checked" : '' }}>
+</td>
+<td>
+  <%= select_tag "measurement_unit", options_for_select(Spree::ProductProperty.measurement_units) %>
 </td>
 <td class='actions'>
   <%= link_to_with_icon "trash", Spree.t(:delete), "javascript:", no_text: true, class: "js-delete-property" %>

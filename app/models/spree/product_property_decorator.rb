@@ -4,6 +4,16 @@ Spree::ProductProperty.class_eval do
 
   accepts_nested_attributes_for :product_property_category
 
+  def self.measurement_units
+    [
+      "None",
+      "Inches",
+      "Liters",
+      "Meters",
+      "Oz"
+    ]
+  end
+
   scope :uncategorized, -> do
     includes(:property_category).
       where("spree_property_categories.id is null").
