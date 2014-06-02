@@ -82,7 +82,7 @@ class CategoryEditor
       @propertyDeleted(property)
 
     @add_property_button.click =>
-      @addProperty({key: '', value: ''})
+      @addProperty({display: true, key: '', value: ''})
 
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
