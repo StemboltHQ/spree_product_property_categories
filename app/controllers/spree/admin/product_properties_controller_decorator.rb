@@ -10,7 +10,8 @@ Spree::Admin::ProductPropertiesController.class_eval do
       properties.map! do |property|
         {
           key: property.property_name,
-          value: property.value
+          value: property.value,
+          display: property.display?
         }
       end
 
@@ -25,7 +26,8 @@ Spree::Admin::ProductPropertiesController.class_eval do
       uncategorized.map! do |property|
         {
           key: property.property_name,
-          value: property.value
+          value: property.value,
+          display: property.display?
         }
       end
 
