@@ -13,6 +13,15 @@ class @PropertyEditPage
     @node.on 'deleteCategory', (ev, category) =>
       @categoryDeleted(category)
 
+    @node.sortable
+      handle: '.category-handle',
+      placeholder: 'ui-sortable-placeholder',
+      items: '.js-category-node'
+      start: (event, ui) ->
+        ui.placeholder.height(ui.item.height())
+        ui.placeholder.html "<div style='height:#{ui.item.height()}; width:#{ui.item.width()};'></div>"
+
+
   categoryDeleted: (category) ->
     category.node.remove()
     @category_editors = @category_editors.filter (c) -> c isnt category
@@ -29,17 +38,17 @@ class @PropertyEditPage
     $.ajax
       type: 'POST'
       dataType: 'json'
-      url: "/api/property_categories"
+      url: '/api/property_categories'
       headers: 'x-spree-token': Spree.api_key
       data: payload
 
       success: (data) =>
-        show_flash("success", data.flash)
+        show_flash('success', data.flash)
       error: (data) =>
         if data.flash
-          show_flash("error", data.flash)
+          show_flash('error', data.flash)
         else
-          show_flash("error", "There was an error updating your properties.")
+          show_flash('error', 'There was an error updating your properties.')
 
   serialize: ->
     @category_editors.map (c) -> c.serialize()
@@ -48,7 +57,7 @@ class CategoryEditor
   constructor: (@parent, @category) ->
     @properties = []
 
-    categoryEditorTemplate = _.template($("#category-editor-template").html())
+    categoryEditorTemplate = _.template($('#category-editor-template').html())
     @node = $("<div class='js-category-node'>").html(categoryEditorTemplate(category_editor: this))
     @parent.append @node
 
@@ -56,7 +65,7 @@ class CategoryEditor
     @add_property_button = @node.find '.js-add-property'
     @property_rows = @node.find 'tbody'
 
-    @node.find("tbody").sortable
+    @node.find('tbody').sortable
       handle: '.handle',
       update: =>
         @sortProperties()
@@ -79,7 +88,7 @@ class CategoryEditor
       @parent.trigger 'deleteCategory', this
 
   name: ->
-    @node.find(".js-cat-name").val()
+    @node.find('.js-cat-name').val()
 
   addProperty: (property) ->
     @properties.push new ProductPropertyEditor(this, @property_rows, property)
@@ -100,8 +109,8 @@ class CategoryEditor
 
 class ProductPropertyEditor
   constructor: (@category_editor, @parent, @property) ->
-    propertyEditorTemplate = _.template($("#property-editor-template").html())
-    @node = $("<tr>").html(propertyEditorTemplate(property_editor: this))
+    propertyEditorTemplate = _.template($('#property-editor-template').html())
+    @node = $('<tr>').html(propertyEditorTemplate(property_editor: this))
     @parent.append @node
 
     @delete_button = @node.find '.js-delete-property'
@@ -110,10 +119,10 @@ class ProductPropertyEditor
       @parent.trigger 'deleteProperty', this
 
   key: ->
-    @node.find(".js-key").val()
+    @node.find('.js-key').val()
 
   value: ->
-    @node.find(".js-val").val()
+    @node.find('.js-val').val()
 
   serialize: ->
     { key: @key(), value: @value() }
