@@ -40,7 +40,8 @@ describe Spree::Admin::ProductPropertiesController do
               properties: [{
                 key: property.property_name,
                 value: property.value,
-                display: true
+                display: true,
+                measurement: "None"
               }]
             }
           ]
@@ -61,7 +62,8 @@ describe Spree::Admin::ProductPropertiesController do
               properties: [{
                 key: property.property_name,
                 value: property.value,
-                display: true
+                display: true,
+                measurement: "None"
               }]
             }
           ]

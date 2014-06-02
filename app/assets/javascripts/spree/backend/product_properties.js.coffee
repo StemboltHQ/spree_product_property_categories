@@ -99,7 +99,7 @@ class CategoryEditor
       @propertyDeleted(property)
 
     @add_property_button.click =>
-      @addProperty({display: true, key: '', value: ''})
+      @addProperty({measurement: "None", display: true, key: '', value: ''})
 
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
@@ -137,6 +137,7 @@ class ProductPropertyEditor
   constructor: (@category_editor, @parent, @property) ->
     propertyEditorTemplate = _.template($('#property-editor-template').html())
     @node = $('<tr>').html(propertyEditorTemplate(property_editor: this))
+    @node.find("option:contains('#{@property.measurement}')").prop('selected', true)
     @parent.append @node
 
     @delete_button = @node.find '.js-delete-property'

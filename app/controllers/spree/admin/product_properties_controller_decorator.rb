@@ -11,7 +11,8 @@ Spree::Admin::ProductPropertiesController.class_eval do
         {
           key: property.property_name,
           value: property.value,
-          display: property.display?
+          display: property.display?,
+          measurement: property.measurement_unit
         }
       end
 
@@ -27,7 +28,8 @@ Spree::Admin::ProductPropertiesController.class_eval do
         {
           key: property.property_name,
           value: property.value,
-          display: property.display?
+          display: property.display?,
+          measurement: property.measurement_unit
         }
       end
 
