@@ -8,6 +8,7 @@ describe Spree::PropertyCategoryRequest do
       {
         "0" => {
           name: category_name,
+          position: 0,
           properties: category_properties
         }
       }
@@ -35,10 +36,13 @@ describe Spree::PropertyCategoryRequest do
         it "is formatted correctly" do
           expected = [{
             product: product,
-            category_name: "not null",
             property_name: "hello",
             value: "world",
-            position: 0
+            position: 0,
+            product_property_category_attributes: {
+              position: 0,
+              property_category_attributes: { name: "not null" }
+            }
           }]
           expect(subject).to eql(expected)
         end
@@ -64,7 +68,7 @@ describe Spree::PropertyCategoryRequest do
       context "without a category name" do
         let(:category_name) { nil }
         it "sets nil categories to 'Uncategorized'" do
-          expect(subject.first[:category_name]).to eql("Uncategorized")
+          expect(subject.first[:product_property_category_attributes][:property_category_attributes][:name]).to eql("Uncategorized")
         end
       end
     end

@@ -91,6 +91,7 @@ class CategoryEditor
   serialize: ->
     {
       name: @name(),
+      position: @node.index() - 1
       properties: @properties.map (p) -> p.serialize()
     }
 

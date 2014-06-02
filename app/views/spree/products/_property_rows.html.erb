@@ -1,0 +1,15 @@
+<% if category_name.present? %>
+  <tr>
+    <td class="category-header" colspan="2"><%= category_name %></td>
+  </tr>
+<% end %>
+
+<% properties.each do |pp| %>
+  <% next unless pp.value.present? %>
+  <% css_class = cycle('even', 'odd', :name => "properties") %>
+  <tr class="<%= css_class %> category-name">
+    <td><strong><%= pp.property.presentation %></strong></td>
+    <td><%= pp.value %></td>
+  </tr>
+<% end %>
+<% reset_cycle('properties') %>

@@ -13,10 +13,17 @@ module Spree
           next if pp[:key].blank?
           properties << {
             product: @product,
-            category_name: category[:name].blank? ?  Spree.t(:default_category_name) : category[:name],
             property_name: pp[:key],
             value: pp[:value],
-            position: i
+            position: i,
+            product_property_category_attributes: {
+              position: category[:position],
+              property_category_attributes: {
+                name: category[:name].blank? ?
+                Spree.t(:default_category_name) :
+                category[:name]
+              }
+            }
           }
         end
       end

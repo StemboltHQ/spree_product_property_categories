@@ -20,7 +20,7 @@ Spree::Admin::ProductPropertiesController.class_eval do
       }
     end
 
-    uncategorized = @product.product_properties.where(category_id: nil)
+    uncategorized = @product.product_properties.uncategorized
     if uncategorized.any?
       uncategorized.map! do |property|
         {
@@ -29,7 +29,7 @@ Spree::Admin::ProductPropertiesController.class_eval do
         }
       end
 
-      @data << { name: nil, properties: uncategorized }
+      @data.unshift({ name: "", properties: uncategorized })
     end
     @data = @data.to_json
   end
