@@ -33,8 +33,8 @@ describe Spree::ProductProperty do
       }
     end
 
-    context "With a 'None' measurement unit" do
-      let(:mu) { "None" }
+    context "With a 'none' measurement unit" do
+      let(:mu) { "none" }
 
       context "with any value" do
         let(:val) { "shgs" }
@@ -43,8 +43,8 @@ describe Spree::ProductProperty do
       end
     end
 
-    context "With a valid measurement unit other than 'None'" do
-      let(:mu) { "Inches" }
+    context "With a valid measurement unit other than 'none'" do
+      let(:mu) { "inches" }
 
       context "with a numeric value" do
         let(:val) { "54" }

@@ -46,7 +46,7 @@ describe Spree::Api::PropertyCategoriesController do
               "0" => {
                 key: "test_key",
                 value: "test_value",
-                measurement: "None"
+                measurement: "none"
               }
             }
           },
@@ -56,12 +56,12 @@ describe Spree::Api::PropertyCategoriesController do
             properties: {
               "0" => {
                 key: "test",
-                measurement: "None",
+                measurement: "none",
                 value: ""
               },
               "1" => {
                 key: "",
-                measurement: "None",
+                measurement: "none",
                 value: "test"
               }
             }

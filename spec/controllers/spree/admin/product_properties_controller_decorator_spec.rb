@@ -41,7 +41,7 @@ describe Spree::Admin::ProductPropertiesController do
                 key: property.property_name,
                 value: property.value,
                 display: true,
-                measurement: "None"
+                measurement: "none"
               }]
             }
           ]
@@ -63,7 +63,7 @@ describe Spree::Admin::ProductPropertiesController do
                 key: property.property_name,
                 value: property.value,
                 display: true,
-                measurement: "None"
+                measurement: "none"
               }]
             }
           ]

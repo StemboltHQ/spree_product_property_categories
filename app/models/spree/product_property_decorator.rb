@@ -6,17 +6,17 @@ Spree::ProductProperty.class_eval do
 
   def self.measurement_units
     [
-      "None",
-      "Inches",
-      "Liters",
-      "Meters",
-      "Oz"
+      "none",
+      "inches",
+      "liters",
+      "meters",
+      "oz"
     ]
   end
 
   validates :measurement_unit, inclusion: { in: Spree::ProductProperty.measurement_units }
   validates :value, numericality: true, allow_blank: true,
-    if: ->(pp) { pp.measurement_unit != "None" }
+    if: ->(pp) { pp.measurement_unit != "none" }
 
   scope :uncategorized, -> do
     includes(:property_category).
