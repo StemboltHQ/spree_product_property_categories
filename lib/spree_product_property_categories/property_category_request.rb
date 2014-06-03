@@ -12,21 +12,25 @@ module Spree
         category[:properties].values.each_with_index do |pp, i|
           next if pp[:key].blank?
           display = (pp[:display] == "1" ? true : false)
-          properties << {
+          property = {
             product: @product,
             property_name: pp[:key],
             value: pp[:value],
             display: display,
-            position: i,
-            product_property_category_attributes: {
-              position: category[:position],
-              property_category_attributes: {
-                name: category[:name].blank? ?
-                Spree.t(:default_category_name) :
-                category[:name]
-              }
-            }
+            position: i
           }
+
+          if category[:name].present?
+            property.merge!({
+              product_property_category_attributes: {
+                position: category[:position],
+                property_category_attributes: {
+                  name: category[:name]
+                }
+              }
+            })
+          end
+          properties << property
         end
       end
       properties
