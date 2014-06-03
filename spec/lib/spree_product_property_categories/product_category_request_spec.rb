@@ -65,13 +65,6 @@ describe Spree::PropertyCategoryRequest do
         let(:property) { {key: nil} }
         it { should be_empty }
       end
-
-      context "without a category name" do
-        let(:category_name) { nil }
-        it "sets nil categories to 'Uncategorized'" do
-          expect(subject.first[:product_property_category_attributes][:property_category_attributes][:name]).to eql("Uncategorized")
-        end
-      end
     end
   end
 end

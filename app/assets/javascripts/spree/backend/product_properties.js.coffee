@@ -8,6 +8,7 @@ class @PropertyEditPage
       @addCategory({name: 'New Category'})
 
     @node.on 'click', '.save', =>
+      return unless @validForm()
       @save()
 
     @node.on 'deleteCategory', (ev, category) =>
@@ -26,12 +27,28 @@ class @PropertyEditPage
     category.node.remove()
     @category_editors = @category_editors.filter (c) -> c isnt category
 
+  validForm: =>
+    category_names = _.map @category_editors, (category) ->
+      category.name()
+    if _.contains(category_names, "")
+      show_flash 'error', 'Your categories must have non blank names.'
+      return false
+    else
+      return true
+
   fetchCategories: (payload) ->
+    # if there isn't an uncategorized category, add one.
+    unless _.findWhere(payload, {name: null})
+      payload.unshift({name: null, properties: []})
+
     $.each payload, (index, item) =>
       @addCategory(item)
 
   addCategory: (category) ->
-    @category_editors.push new CategoryEditor(@node, category)
+    if category.name != null
+      @category_editors.push new CategoryEditor(@node, category)
+    else
+      @category_editors.push new DefaultCategoryEditor(@node, category)
 
   save: ->
     payload = { product_id: @product_id, product_categories: @serialize() }
@@ -106,6 +123,15 @@ class CategoryEditor
 
   sortProperties: ->
     @properties = _.sortBy @properties, (p) -> p.node.index()
+
+class DefaultCategoryEditor extends CategoryEditor
+  constructor: (@parent, @category) ->
+    super(@parent, @category)
+
+    category_name = @node.find('.js-cat-name')
+    category_name.prop({disabled: true, placeholder: 'uncategorized'})
+  name: ->
+    null
 
 class ProductPropertyEditor
   constructor: (@category_editor, @parent, @property) ->

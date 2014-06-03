@@ -71,8 +71,9 @@ describe Spree::Api::PropertyCategoriesController do
             expect(subject.product_properties.count).to eql(2)
           end
 
-          it "created two categories" do
-            expect(Spree::PropertyCategory.count).to eql(2)
+          it "created one category" do
+            # we don't create categories when they dont have names
+            expect(Spree::PropertyCategory.count).to eql(1)
           end
         end
       end
