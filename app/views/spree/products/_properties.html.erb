@@ -1,17 +1,21 @@
-<h6 class="product-section-title"><%= Spree.t('properties')%></h6>
-<table id="product-properties" class="table-display" data-hook>
-  <tbody>
-    <% uncategorized = @product.product_properties.displayable.uncategorized %>
-    <% if uncategorized.any?%>
-      <%= render "property_rows", properties: uncategorized, category_name: nil %>
-    <% end %>
+<% if @product.product_properties.displayable.any? %>
+  <h6 class="product-section-title"><%= Spree.t('properties')%></h6>
+  <table id="product-properties" class="table-display" data-hook>
+    <tbody>
+      <% uncategorized = @product.product_properties.displayable.uncategorized %>
+      <% if uncategorized.any?%>
+        <%= render "property_rows", properties: uncategorized, category_name: nil %>
+      <% end %>
 
-    <% @categories.each do |cat| %>
-      <%= render "property_rows",
-        properties: cat.product_properties.displayable.where(product_id: @product.id),
-        category_name: cat.name %>
-    <% end %>
-  </tbody>
-</table>
+      <% @categories.each do |cat| %>
+        <% properties = cat.product_properties.displayable.where(product_id: @product.id) %>
+        <% next unless properties.any? %>
+        <%= render "property_rows",
+          properties: properties,
+          category_name: cat.name %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 
 
