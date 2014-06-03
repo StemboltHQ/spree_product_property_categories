@@ -20,6 +20,36 @@ describe Spree::ProductProperty do
     end
   end
 
+  describe "#display_value" do
+    let!(:pp) { build_stubbed :product_property, value: "123", measurement_unit: mu }
+
+    subject { pp.display_value }
+
+    context "when the measurement unit is 'none'" do
+      let(:mu) { "none" }
+
+      it { should eql(pp.value) }
+    end
+
+    context "when the measurement unit is 'inches'" do
+      let(:mu) { "inches" }
+
+      it { should eql(pp.value + '"') }
+    end
+
+    context "when the measurement unit is 'pounds'" do
+      let(:mu) { "pounds" }
+
+      it { should eql(pp.value + " lb") }
+    end
+
+    context "when the measurement unit is 'oz'" do
+      let(:mu) { "oz" }
+
+      it { should eql(pp.value + " oz") }
+    end
+  end
+
   describe "#valid?" do
     let!(:property) { build_stubbed :property }
     subject { described_class.new(attributes).valid? }

@@ -8,8 +8,7 @@ Spree::ProductProperty.class_eval do
     [
       "none",
       "inches",
-      "liters",
-      "meters",
+      "pounds",
       "oz"
     ]
   end
@@ -30,5 +29,18 @@ Spree::ProductProperty.class_eval do
 
   def category_name
     property_category.name if property_category
+  end
+
+  def display_value
+    case self.measurement_unit
+    when "none"
+      self.value
+    when "inches"
+      self.value + '"'
+    when "pounds"
+      self.value + " lb"
+    when "oz"
+      self.value + " oz"
+    end
   end
 end
