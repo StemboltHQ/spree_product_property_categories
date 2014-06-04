@@ -26,7 +26,7 @@ describe Spree::ProductProperty do
     subject { pp.display_value }
 
     context "when the measurement unit is 'none'" do
-      let(:mu) { "none" }
+      let(:mu) { nil }
 
       it { should eql(pp.value) }
     end
@@ -63,8 +63,8 @@ describe Spree::ProductProperty do
       }
     end
 
-    context "With a 'none' measurement unit" do
-      let(:mu) { "none" }
+    context "With a nil measurement unit" do
+      let(:mu) { nil }
 
       context "with any value" do
         let(:val) { "shgs" }

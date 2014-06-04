@@ -12,13 +12,14 @@ module Spree
         category[:properties].values.each_with_index do |pp, i|
           next if pp[:key].blank?
           display = (pp[:display] == "1" ? true : false)
+          measurement = pp[:measurement].blank? ? nil : pp[:measurement]
           property = {
             product: @product,
             property_name: pp[:key],
             value: pp[:value],
             display: display,
             position: i,
-            measurement_unit: pp[:measurement]
+            measurement_unit: measurement
           }
 
           if category[:name].present?
