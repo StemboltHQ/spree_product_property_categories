@@ -52,7 +52,7 @@
   <input name='display' type='checkbox' class='js-display' value='display' {{ property_editor.property.display ? "checked" : '' }}>
 </td>
 <td>
-  <%= select_tag "measurement_unit", options_for_select(Spree::ProductProperty.measurement_units), class: "js-measurement" %>
+  <%= select_tag "measurement_unit", options_for_select(Spree::ProductProperty.measurement_units.keys), class: "js-measurement" %>
 </td>
 <td class='actions'>
   <%= link_to_with_icon "trash", Spree.t(:delete), "javascript:", no_text: true, class: "js-delete-property" %>

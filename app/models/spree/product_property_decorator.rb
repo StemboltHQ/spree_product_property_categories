@@ -5,15 +5,15 @@ Spree::ProductProperty.class_eval do
   accepts_nested_attributes_for :product_property_category
 
   def self.measurement_units
-    [
-      nil,
-      "inches",
-      "pounds",
-      "oz"
-    ]
+    {
+      nil => '',
+      "inches" => '"',
+      "pounds" => ' lb',
+      "oz" => ' oz'
+    }
   end
 
-  validates :measurement_unit, inclusion: { in: Spree::ProductProperty.measurement_units }
+  validates :measurement_unit, inclusion: { in: Spree::ProductProperty.measurement_units.keys }
   validates :value, numericality: true, allow_blank: true,
     if: ->(pp) { pp.measurement_unit != nil }
 
@@ -32,15 +32,6 @@ Spree::ProductProperty.class_eval do
   end
 
   def display_value
-    case self.measurement_unit
-    when "inches"
-      self.value + '"'
-    when "pounds"
-      self.value + " lb"
-    when "oz"
-      self.value + " oz"
-    else
-      self.value
-    end
+    value + self.class.measurement_units[measurement_unit]
   end
 end
