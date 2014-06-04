@@ -9,7 +9,7 @@
   <% css_class = cycle('even', 'odd', :name => "properties") %>
   <tr class="<%= css_class %> category-name">
     <td><strong><%= pp.property.presentation %></strong></td>
-    <td><%= pp.value %></td>
+    <td><%= pp.display_value %></td>
   </tr>
 <% end %>
 <% reset_cycle('properties') %>

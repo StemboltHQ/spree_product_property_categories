@@ -62,8 +62,8 @@ class @PropertyEditPage
       success: (data) =>
         show_flash('success', data.flash)
       error: (data) =>
-        if data.flash
-          show_flash('error', data.flash)
+        if flash = data.responseJSON.flash
+          show_flash('error', flash)
         else
           show_flash('error', 'There was an error updating your properties.')
 
@@ -99,7 +99,7 @@ class CategoryEditor
       @propertyDeleted(property)
 
     @add_property_button.click =>
-      @addProperty({display: true, key: '', value: ''})
+      @addProperty({measurement: null, display: true, key: '', value: ''})
 
     @delete_button.click =>
       @parent.trigger 'deleteCategory', this
@@ -137,6 +137,7 @@ class ProductPropertyEditor
   constructor: (@category_editor, @parent, @property) ->
     propertyEditorTemplate = _.template($('#property-editor-template').html())
     @node = $('<tr>').html(propertyEditorTemplate(property_editor: this))
+    @node.find("option:contains('#{@property.measurement}')").prop('selected', true)
     @parent.append @node
 
     @delete_button = @node.find '.js-delete-property'
@@ -153,5 +154,8 @@ class ProductPropertyEditor
   display: ->
     if @node.find(".js-display").is(":checked") then "1" else "0"
 
+  measurement: ->
+    @node.find(".js-measurement").val()
+
   serialize: ->
-    { key: @key(), value: @value(), display: @display() }
+    { key: @key(), value: @value(), display: @display(), measurement: @measurement() }

@@ -18,6 +18,24 @@ describe Spree::Api::PropertyCategoriesController do
       end
     end
 
+    context "when a validation error occurs" do
+      let(:product) { create :product }
+      let(:request_double) do
+        double("Spree::PropertyCategoryRequest", properties: [{}])
+      end
+
+      before do
+        allow(Spree::PropertyCategoryRequest).to receive(:new).and_return(request_double)
+        post :update, product_categories: [], product_id: product.slug, use_route: :spree, format: :json
+      end
+
+      assert_bad_response
+
+      it "contains a validation error in its' response" do
+        expect(response.body).to match(/Validation Failed/i)
+      end
+    end
+
     context "with a data parameter" do
       let(:request_params) do
         {
@@ -27,7 +45,8 @@ describe Spree::Api::PropertyCategoriesController do
             properties: {
               "0" => {
                 key: "test_key",
-                value: "test_value"
+                value: "test_value",
+                measurement: ""
               }
             }
           },
@@ -37,10 +56,12 @@ describe Spree::Api::PropertyCategoriesController do
             properties: {
               "0" => {
                 key: "test",
+                measurement: "",
                 value: ""
               },
               "1" => {
                 key: "",
+                measurement: "",
                 value: "test"
               }
             }
