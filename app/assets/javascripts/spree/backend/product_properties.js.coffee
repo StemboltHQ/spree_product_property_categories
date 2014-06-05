@@ -48,7 +48,7 @@ class @PropertyEditPage
   addCategory: (category) ->
     if category.name != null
       category_editor = new CategoryEditor(@node, category, @property_engine)
-      @category_engine.addCategory category_editor
+      @category_engine.addNode category_editor.node.find(".typeahead.js-cat-name")
     else
       category_editor = new DefaultCategoryEditor(@node, category, @property_engine)
 
@@ -112,7 +112,7 @@ class CategoryEditor
 
   addProperty: (property) ->
     property_editor = new ProductPropertyEditor(this, @property_rows, property)
-    @property_engine.addProperty property_editor
+    @property_engine.addNode property_editor.node.find(".typeahead.js-key")
     @properties.push property_editor
 
   propertyDeleted: (property) ->
@@ -165,10 +165,56 @@ class ProductPropertyEditor
   serialize: ->
     { key: @key(), value: @value(), display: @display(), measurement: @measurement() }
 
-class PropertyCategoryTypeahead
+class PropertyTypeahead
   constructor: ->
     @nodes = []
-    @engine = new Bloodhound({
+    @engine = new Bloodhound @engineParams()
+
+    @engine.initialize()
+
+  engineFilter: (response) ->
+    response.properties
+
+  engineParams: ->
+    {
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: "/api/properties.json"
+        filter: @engineFilter
+      },
+      remote: {
+        url:"/api/properties.json?q%5Bname_cont%5D=%QUERY",
+        filter: @engineFilter
+        rateLimitBy: "debounce",
+        rateLimitWait: 500
+      },
+      dupDetector: (datum1, datum2) ->
+        datum1.name == datum2.name
+    }
+
+  name: ->
+    "properties"
+  displayKey: ->
+    "name"
+
+  addNode: (node) ->
+    typeahead = node.typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: @name(),
+      displayKey: @displayKey(),
+      source: @engine.ttAdapter()
+    })
+    @nodes.push typeahead
+    typeahead
+
+class PropertyCategoryTypeahead extends PropertyTypeahead
+  engineParams: ->
+    {
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
       dupDetector: (datum1, datum2) ->
@@ -183,62 +229,7 @@ class PropertyCategoryTypeahead
         rateLimitBy: "debounce",
         rateLimitWait: 500
       }
-    })
+    }
 
-    @engine.initialize()
-
-  addCategory: (category_editor) ->
-    typeahead = category_editor.node.find(".typeahead.js-cat-name").typeahead({
-      hint: true,
-      highlight: true,
-      minLength: 1
-    },
-    {
-      name: "categories",
-      displayKey: "name",
-      source: @engine.ttAdapter()
-    })
-    @nodes.push typeahead
-    typeahead
-
-class PropertyTypeahead
-  constructor: ->
-    @nodes = []
-    @engine = new Bloodhound({
-      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-      queryTokenizer: Bloodhound.tokenizers.whitespace,
-      dupDetector: (datum1, datum2) ->
-        datum1.name == datum2.name
-
-      prefetch: {
-        url: "/api/properties.json"
-        filter: @engineFilter
-      }
-
-      remote: {
-        url:"/api/properties.json?q%5Bname_cont%5D=%QUERY",
-        filter: @engineFilter
-        rateLimitBy: "debounce",
-        rateLimitWait: 500
-      }
-    })
-
-    @engine.initialize()
-
-  engineFilter: (response) ->
-    response.properties
-
-  addProperty: (property_editor) ->
-    typeahead = property_editor.node.find(".typeahead.js-key").typeahead({
-      hint: true,
-      highlight: true,
-      minLength: 1
-    },
-    {
-      name: "properties",
-      displayKey: "name",
-      source: @engine.ttAdapter()
-    })
-    @nodes.push typeahead
-    typeahead
-
+  name: ->
+    "categories"
