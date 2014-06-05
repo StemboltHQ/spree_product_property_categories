@@ -1,6 +1,8 @@
 class @PropertyEditPage
   constructor: (@node, payload, @product_id) ->
     @category_editors = []
+    @category_engine = new PropertyCategoryTypeahead
+    @property_engine = new PropertyTypeahead
 
     @fetchCategories(payload)
 
@@ -21,7 +23,6 @@ class @PropertyEditPage
       start: (event, ui) ->
         ui.placeholder.height(ui.item.height())
         ui.placeholder.html "<div style='height:#{ui.item.height()}; width:#{ui.item.width()};'></div>"
-
 
   categoryDeleted: (category) ->
     category.node.remove()
@@ -46,9 +47,12 @@ class @PropertyEditPage
 
   addCategory: (category) ->
     if category.name != null
-      @category_editors.push new CategoryEditor(@node, category)
+      category_editor = new CategoryEditor(@node, category, @property_engine)
+      @category_engine.addNode category_editor.node.find(".typeahead.js-cat-name")
     else
-      @category_editors.push new DefaultCategoryEditor(@node, category)
+      category_editor = new DefaultCategoryEditor(@node, category, @property_engine)
+
+    @category_editors.push category_editor
 
   save: ->
     payload = { product_id: @product_id, product_categories: @serialize() }
@@ -71,9 +75,8 @@ class @PropertyEditPage
     @category_editors.map (c) -> c.serialize()
 
 class CategoryEditor
-  constructor: (@parent, @category) ->
+  constructor: (@parent, @category, @property_engine) ->
     @properties = []
-
     categoryEditorTemplate = _.template($('#category-editor-template').html())
     @node = $("<div class='js-category-node'>").html(categoryEditorTemplate(category_editor: this))
     @parent.append @node
@@ -105,10 +108,12 @@ class CategoryEditor
       @parent.trigger 'deleteCategory', this
 
   name: ->
-    @node.find('.js-cat-name').val()
+    @node.find('.js-cat-name.tt-input').typeahead('val')
 
   addProperty: (property) ->
-    @properties.push new ProductPropertyEditor(this, @property_rows, property)
+    property_editor = new ProductPropertyEditor(this, @property_rows, property)
+    @property_engine.addNode property_editor.node.find(".typeahead.js-key")
+    @properties.push property_editor
 
   propertyDeleted: (property) ->
     property.node.remove()
@@ -125,8 +130,8 @@ class CategoryEditor
     @properties = _.sortBy @properties, (p) -> p.node.index()
 
 class DefaultCategoryEditor extends CategoryEditor
-  constructor: (@parent, @category) ->
-    super(@parent, @category)
+  constructor: (@parent, @category, @property_engine) ->
+    super(@parent, @category, @property_engine)
 
     category_name = @node.find('.js-cat-name')
     category_name.prop({disabled: true, placeholder: 'uncategorized'})
@@ -146,7 +151,7 @@ class ProductPropertyEditor
       @parent.trigger 'deleteProperty', this
 
   key: ->
-    @node.find('.js-key').val()
+    @node.find('.js-key.tt-input').typeahead('val')
 
   value: ->
     @node.find('.js-val').val()
@@ -159,3 +164,72 @@ class ProductPropertyEditor
 
   serialize: ->
     { key: @key(), value: @value(), display: @display(), measurement: @measurement() }
+
+class PropertyTypeahead
+  constructor: ->
+    @nodes = []
+    @engine = new Bloodhound @engineParams()
+
+    @engine.initialize()
+
+  engineFilter: (response) ->
+    response.properties
+
+  engineParams: ->
+    {
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: "/api/properties.json"
+        filter: @engineFilter
+      },
+      remote: {
+        url:"/api/properties.json?q%5Bname_cont%5D=%QUERY",
+        filter: @engineFilter
+        rateLimitBy: "debounce",
+        rateLimitWait: 500
+      },
+      dupDetector: (datum1, datum2) ->
+        datum1.name == datum2.name
+    }
+
+  name: ->
+    "properties"
+  displayKey: ->
+    "name"
+
+  addNode: (node) ->
+    typeahead = node.typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: @name(),
+      displayKey: @displayKey(),
+      source: @engine.ttAdapter()
+    })
+    @nodes.push typeahead
+    typeahead
+
+class PropertyCategoryTypeahead extends PropertyTypeahead
+  engineParams: ->
+    {
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      dupDetector: (datum1, datum2) ->
+        datum1.name == datum2.name
+
+      prefetch: {
+        url: "/api/property_categories.json"
+      }
+
+      remote: {
+        url:"/api/property_categories.json?q%5Bname_cont%5D=%QUERY",
+        rateLimitBy: "debounce",
+        rateLimitWait: 500
+      }
+    }
+
+  name: ->
+    "categories"

@@ -1,11 +1,47 @@
 require 'spec_helper'
 
 describe Spree::Api::PropertyCategoriesController do
-  describe "POST update" do
-    before do
-      allow(controller).to receive(:try_spree_current_user).and_return(create(:admin_user))
+  before do
+    allow(controller).to receive(:try_spree_current_user).and_return(create(:admin_user))
+  end
+
+  describe "GET index" do
+    let!(:property_categories) do
+      ["Newb", "New Hampshire", "Yolo"].map do |name|
+        create :property_category, name: name
+      end
     end
 
+    let(:request) do
+      {
+        q: {
+          name_cont: name_query
+        },
+        use_route: :spree,
+        format: :json
+      }
+    end
+
+    context "with a valid 'q' parameter" do
+      let(:name_query) { "Ne" }
+      before { get :index, request }
+
+      it "returns the two entries with Ne in their name." do
+        names = JSON.parse(response.body).map {|datum| datum["name"]}
+        expect(names).to eql(["Newb", "New Hampshire"])
+      end
+    end
+
+    context "without a 'q' parameter" do
+     before { get :index, use_route: :spree, format: :json }
+
+      it "returns all 3 property categories" do
+        expect(JSON.parse(response.body)).to have(3).items
+      end
+    end
+  end
+
+  describe "POST update" do
     def self.assert_bad_response
       describe "response" do
         it "is a bad request" do
