@@ -3,6 +3,13 @@ require 'spree_product_property_categories/property_category_request'
 module Spree
   module Api
     class PropertyCategoriesController < Spree::Api::BaseController
+      def index
+        authorize! :read, Spree::PropertyCategory
+        result = Spree::PropertyCategory.ransack(params[:q]).result
+
+        render json: result.page(params[:page]).per(params[:per_page])
+      end
+
       def update
         authorize! :update, Spree::PropertyCategory
 

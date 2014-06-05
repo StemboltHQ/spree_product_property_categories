@@ -1,6 +1,7 @@
 class @PropertyEditPage
   constructor: (@node, payload, @product_id) ->
     @category_editors = []
+    @category_engine = new PropertyCategoryTypeahead
 
     @fetchCategories(payload)
 
@@ -21,7 +22,6 @@ class @PropertyEditPage
       start: (event, ui) ->
         ui.placeholder.height(ui.item.height())
         ui.placeholder.html "<div style='height:#{ui.item.height()}; width:#{ui.item.width()};'></div>"
-
 
   categoryDeleted: (category) ->
     category.node.remove()
@@ -46,9 +46,12 @@ class @PropertyEditPage
 
   addCategory: (category) ->
     if category.name != null
-      @category_editors.push new CategoryEditor(@node, category)
+      category_editor = new CategoryEditor(@node, category)
+      @category_engine.addCategory category_editor
     else
-      @category_editors.push new DefaultCategoryEditor(@node, category)
+      category_editor = new DefaultCategoryEditor(@node, category)
+
+    @category_editors.push category_editor
 
   save: ->
     payload = { product_id: @product_id, product_categories: @serialize() }
@@ -105,7 +108,7 @@ class CategoryEditor
       @parent.trigger 'deleteCategory', this
 
   name: ->
-    @node.find('.js-cat-name').val()
+    @node.find('.js-cat-name.tt-input').typeahead('val')
 
   addProperty: (property) ->
     @properties.push new ProductPropertyEditor(this, @property_rows, property)
@@ -159,3 +162,39 @@ class ProductPropertyEditor
 
   serialize: ->
     { key: @key(), value: @value(), display: @display(), measurement: @measurement() }
+
+class PropertyCategoryTypeahead
+  constructor: ->
+    @nodes = []
+    @engine = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      dupDetector: (datum1, datum2) ->
+        datum1.name == datum2.name
+
+      prefetch: {
+        url: "/api/property_categories.json"
+      }
+
+      remote: {
+        url:"/api/property_categories.json?q%5Bname_cont%5D=%QUERY",
+        rateLimitBy: "debounce",
+        rateLimitWait: 500
+      }
+    })
+
+    @engine.initialize()
+
+  addCategory: (category_editor) ->
+    typeahead = category_editor.node.find(".typeahead.js-cat-name").typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: "categories",
+      displayKey: "name",
+      source: @engine.ttAdapter()
+    })
+    @nodes.push typeahead
+    typeahead
