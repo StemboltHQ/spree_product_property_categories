@@ -1,6 +1,7 @@
 module SpreeProductPropertyCategories
   class Engine < Rails::Engine
     require 'spree/core'
+    require 'twitter-typeahead-rails'
     isolate_namespace Spree
     engine_name 'spree_product_property_categories'
 

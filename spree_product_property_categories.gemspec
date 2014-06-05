@@ -3,8 +3,8 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_product_property_categories'
   s.version     = '2.2.0'
-  s.summary     = 'Categories for product properties'
-  s.description = 'Categories for product properties'
+  s.summary     = 'Categorize product properties.'
+  s.description = 'Allows for sorting and categorization of product properties'
   s.required_ruby_version = '>= 1.9.3'
 
   s.author    = 'FreeRunning Technologies'
@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'spree_backend',     '~> 2.2.0'
   s.add_dependency 'spree_core',        '~> 2.2.0'
   s.add_dependency 'spree_frontend',    '~> 2.2.0'
+  s.add_dependency 'twitter-typeahead-rails'
 
   s.add_development_dependency 'capybara', '~> 2.1'
   s.add_development_dependency 'coffee-rails'
