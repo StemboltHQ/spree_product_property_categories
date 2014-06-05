@@ -2,6 +2,7 @@ class @PropertyEditPage
   constructor: (@node, payload, @product_id) ->
     @category_editors = []
     @category_engine = new PropertyCategoryTypeahead
+    @property_engine = new PropertyTypeahead
 
     @fetchCategories(payload)
 
@@ -46,10 +47,10 @@ class @PropertyEditPage
 
   addCategory: (category) ->
     if category.name != null
-      category_editor = new CategoryEditor(@node, category)
+      category_editor = new CategoryEditor(@node, category, @property_engine)
       @category_engine.addCategory category_editor
     else
-      category_editor = new DefaultCategoryEditor(@node, category)
+      category_editor = new DefaultCategoryEditor(@node, category, @property_engine)
 
     @category_editors.push category_editor
 
@@ -74,9 +75,8 @@ class @PropertyEditPage
     @category_editors.map (c) -> c.serialize()
 
 class CategoryEditor
-  constructor: (@parent, @category) ->
+  constructor: (@parent, @category, @property_engine) ->
     @properties = []
-
     categoryEditorTemplate = _.template($('#category-editor-template').html())
     @node = $("<div class='js-category-node'>").html(categoryEditorTemplate(category_editor: this))
     @parent.append @node
@@ -111,7 +111,9 @@ class CategoryEditor
     @node.find('.js-cat-name.tt-input').typeahead('val')
 
   addProperty: (property) ->
-    @properties.push new ProductPropertyEditor(this, @property_rows, property)
+    property_editor = new ProductPropertyEditor(this, @property_rows, property)
+    @property_engine.addProperty property_editor
+    @properties.push property_editor
 
   propertyDeleted: (property) ->
     property.node.remove()
@@ -128,8 +130,8 @@ class CategoryEditor
     @properties = _.sortBy @properties, (p) -> p.node.index()
 
 class DefaultCategoryEditor extends CategoryEditor
-  constructor: (@parent, @category) ->
-    super(@parent, @category)
+  constructor: (@parent, @category, @property_engine) ->
+    super(@parent, @category, @property_engine)
 
     category_name = @node.find('.js-cat-name')
     category_name.prop({disabled: true, placeholder: 'uncategorized'})
@@ -149,7 +151,7 @@ class ProductPropertyEditor
       @parent.trigger 'deleteProperty', this
 
   key: ->
-    @node.find('.js-key').val()
+    @node.find('.js-key.tt-input').typeahead('val')
 
   value: ->
     @node.find('.js-val').val()
@@ -198,3 +200,45 @@ class PropertyCategoryTypeahead
     })
     @nodes.push typeahead
     typeahead
+
+class PropertyTypeahead
+  constructor: ->
+    @nodes = []
+    @engine = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      dupDetector: (datum1, datum2) ->
+        datum1.name == datum2.name
+
+      prefetch: {
+        url: "/api/properties.json"
+        filter: @engineFilter
+      }
+
+      remote: {
+        url:"/api/properties.json?q%5Bname_cont%5D=%QUERY",
+        filter: @engineFilter
+        rateLimitBy: "debounce",
+        rateLimitWait: 500
+      }
+    })
+
+    @engine.initialize()
+
+  engineFilter: (response) ->
+    response.properties
+
+  addProperty: (property_editor) ->
+    typeahead = property_editor.node.find(".typeahead.js-key").typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: "properties",
+      displayKey: "name",
+      source: @engine.ttAdapter()
+    })
+    @nodes.push typeahead
+    typeahead
+
