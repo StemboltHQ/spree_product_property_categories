@@ -1,7 +1,14 @@
-SpreeProductPropertyCategories
-==============================
+Spree Product Property Categories
+=================================
 
-Introduction goes here.
+This gem heavily modifies the existing Property and ProductProperty logic in Spree.
+
+This gem is built for Spree 2-2-stable and hasn't been tested with any other version.
+
+Specifically, the gem replaces the app/views/spree/products/\_properties partial and the entire administrative interface for product properties. You may choose to modify \_properties.html.erb to display the properties and categories to your desire as the basic styling is rather unappeasing.
+
+![Admin Interface](http://i.imgur.com/LDAvhu6.png?1)
+
 
 Installation
 ------------
@@ -30,11 +37,14 @@ bundle exec rake test_app
 bundle exec rspec spec
 ```
 
-When testing your applications integration with this extension you may use it's factories.
-Simply add this require statement to your spec_helper:
+## Contributing
 
-```ruby
-require 'spree_product_property_categories/factories'
-```
+Everyone is encouraged to help improve this project. Here are a few ways you can help:
 
-Copyright (c) 2014 [name of extension creator], released under the New BSD License
+- [Report bugs](https://github.com/freerunningtech/spree_product_property_categories/issues)
+- Fix bugs and [submit pull requests](https://github.com/freerunningtech/spree_product_property_categories/pulls)
+- Write, clarify, or fix documentation
+- Suggest or add new features
+
+
+Copyright (c) 2014 FreeRunning Technologies Inc, released under the MIT License
