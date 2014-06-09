@@ -10,4 +10,10 @@ class Spree::PropertyCategory < ActiveRecord::Base
       where(spree_products: { id: product_ids }).
       uniq
   end
+
+  scope :with_displayable_properties, -> do
+    joins(:product_properties).
+      where(spree_product_properties: { display: true }).
+      uniq
+  end
 end
