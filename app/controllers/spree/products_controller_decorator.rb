@@ -4,6 +4,6 @@ Spree::ProductsController.class_eval do
   protected
 
   def set_categories
-    @categories = Spree::PropertyCategory.for_product(@product)
+    @categories = @product.sorted_property_categories
   end
 end

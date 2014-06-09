@@ -3,7 +3,7 @@ Spree::Admin::ProductPropertiesController.class_eval do
   skip_before_filter :setup_property
 
   def index
-    categories = Spree::PropertyCategory.for_product(@product)
+    categories = @product.sorted_property_categories
 
     @data = categories.map do |cat|
       properties = cat.product_properties.where(product_id: @product.id)

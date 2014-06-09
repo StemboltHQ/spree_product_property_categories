@@ -23,6 +23,12 @@ Spree::ProductProperty.class_eval do
       references(:property_category)
   end
 
+  scope :uncategorized_properties_for_products, ->(product_ids) do
+    where(product_id: product_ids).
+      uncategorized.includes(:property).
+      map(&:property).uniq
+  end
+
   scope :displayable, -> do
     where(display: true)
   end
