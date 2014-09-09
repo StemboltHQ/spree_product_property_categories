@@ -7,7 +7,7 @@ module Spree
         authorize! :read, Spree::PropertyCategory
         result = Spree::PropertyCategory.ransack(params[:q]).result
 
-        render json: result.page(params[:page]).per(params[:per_page])
+        render text: result.page(params[:page]).per(params[:per_page]).to_json(root: false)
       end
 
       def update

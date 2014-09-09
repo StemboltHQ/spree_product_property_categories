@@ -217,19 +217,21 @@ class PropertyCategoryTypeahead extends PropertyTypeahead
     {
       datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
       queryTokenizer: Bloodhound.tokenizers.whitespace,
-      dupDetector: (datum1, datum2) ->
-        datum1.name == datum2.name
-
       prefetch: {
-        url: "/api/property_categories.json"
-      }
-
+        url: "/api/property_categories.json",
+        filter: @engineFilter
+      },
       remote: {
         url:"/api/property_categories.json?q%5Bname_cont%5D=%QUERY",
         rateLimitBy: "debounce",
         rateLimitWait: 500
-      }
+        filter: @engineFilter
+      },
+      dupDetector: (datum1, datum2) ->
+        datum1.name == datum2.name
     }
 
   name: ->
     "categories"
+  engineFilter: (response) ->
+    response
